@@ -1,275 +1,156 @@
-<?php
-session_start();
-
-// Protect page
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-// Connect to DB (optional: only if you’re querying user details again)
-$host = 'localhost';
-$db   = 'smart_leave_db';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
-
-try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-    // Optional: fetch full user info if needed
-    $stmt = $pdo->prepare("SELECT * FROM employee WHERE id = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
-}
-?>
-
-
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Dashboard</title>
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
+    <title>Employee Leave Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css?v=<?php echo time(); ?>">  
+ </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo">
-                <img src="https://via.placeholder.com/24" alt="Homies Lab Logo"> Homies Lab
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#" class="nav-item active"><span class="material-icons">dashboard</span> Dashboard</a></li>
-                    <li><a href="#" class="nav-item"><span class="material-icons">calendar_today</span> My Leaves</a></li>
-                    <li><a href="#" class="nav-item"><span class="material-icons">policy</span> Leave Policy</a></li>
-                    <li><a href="#" class="nav-item"><span class="material-icons">group</span> Team</a></li>
-                    <li><a href="#" class="nav-item"><span class="material-icons">notifications</span> Announcements</a></li>
-                    <li><a href="#" class="nav-item"><span class="material-icons">help_outline</span> Help & Support</a></li>
-                </ul>
-            </nav>
-            <div class="separator"></div>
-            <div class="section-title">Quick Actions</div>
-            <ul class="sub-nav">
-                <li><a href="#" class="nav-item"><span class="material-icons">add_circle_outline</span> Request New Leave</a></li>
-                <li><a href="#" class="nav-item"><span class="material-icons">description</span> View Payslips</a></li>
-                <li><a href="#" class="nav-item"><span class="material-icons">person_add</span> Update Profile</a></li>
-            </ul>
-
-            <div class="current-user">
-                <img src="https://via.placeholder.com/40" alt="<?php echo $loggedInEmployeeName; ?>" class="user-avatar">
-                <div class="user-info">
-                    <div class="user-name"><?php echo $loggedInEmployeeName; ?></div>
-                    <div class="user-role">Employee</div> </div>
-                <span class="material-icons">more_vert</span>
-            </div>
-        </aside>
-
+    <div class="background-overlay"></div> <div class="dashboard-container">
         <main class="main-content">
-            <header class="dashboard-header">
-                <div class="breadcrumb">Home / My Dashboard</div>
+            <header class="main-header">
+                <div class="header-left">
+                    <div class="header-logo-text">LeaveFlow</div> <nav class="floating-nav">
+                        <ul>
+                            <li class="active"><a href="#"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                            <li><a href="#"><i class="fas fa-calendar-plus"></i> Apply Leave</a></li>
+                            <li><a href="#"><i class="fas fa-history"></i> Leave History</a></li>
+                            <li><a href="#"><i class="fas fa-bell"></i> Notifications <span class="nav-badge">3</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
                 <div class="header-right">
-                    <span class="material-icons search-icon">search</span>
-                    <input type="text" placeholder="Search here" class="search-input">
-                    <span class="material-icons notification-icon">notifications</span>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="user-profile-summary">
+                        <div class="user-info-text">
+                            <p class="user-name">Maxwel Kimtai</p>
+                            <p class="user-role-header">Employee</p>
+                        </div>
+                        <img src="https://via.placeholder.com/35x35?text=MX" alt="User Avatar" class="user-avatar-small">
+                    </div>
+                    <a href="#" class="logout-icon-button" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
                 </div>
             </header>
 
-            <div class="greeting-section">
-                <h1>Good Morning, <?php echo $loggedInEmployeeName; ?></h1>
-                <p>It's <?php echo date('l, d F Y'); ?></p>
-            </div>
+            <section class="dashboard-grid">
 
-            <section class="info-cards">
-                <div class="card">
-                    <span class="material-icons icon-bg-red">pending_actions</span>
-                    <div class="card-content">
-                        <div class="number"><?php echo $myPendingLeaves; ?></div>
-                        <div class="label">My Pending Leaves</div>
-                    </div>
+                <div class="grid-item stat-card remaining-leave">
+                    <div class="stat-icon-wrap yellow-bg"><i class="fas fa-calendar-day"></i></div>
+                    <p class="stat-title">Remaining Leave</p>
+                    <p class="stat-value">15 Days</p>
                 </div>
-                <div class="card">
-                    <span class="material-icons icon-bg-green">check_circle</span>
-                    <div class="card-content">
-                        <div class="number"><?php echo $myApprovedLeaves; ?></div>
-                        <div class="label">My Approved Leaves</div>
-                    </div>
+                <div class="grid-item stat-card leave-requests-pending">
+                    <div class="stat-icon-wrap blue-bg"><i class="fas fa-clock"></i></div>
+                    <p class="stat-title">Requests Pending</p>
+                    <p class="stat-value">2</p>
                 </div>
-                <div class="card">
-                    <span class="material-icons icon-bg-blue">event_note</span>
-                    <div class="card-content">
-                        <div class="number"><?php echo $myTotalDaysUsed; ?></div>
-                        <div class="label">Days Leave Used (<?php echo $currentYear; ?>)</div>
-                    </div>
+                 <div class="grid-item stat-card next-meeting">
+                    <div class="stat-icon-wrap purple-bg"><i class="fas fa-comments"></i></div>
+                    <p class="stat-title">Next Meeting</p>
+                    <p class="stat-value">2:00 PM (Team Sync)</p>
                 </div>
-                <div class="card">
-                    <span class="material-icons icon-bg-purple">group</span>
-                    <div class="card-content">
-                        <div class="number"><?php echo count($teamUpcomingLeaves); ?></div> <div class="label">Team Members Away</div>
-                    </div>
-                </div>
-            </section>
 
-            <section class="main-sections-grid">
-                <div class="section-card schedule-card">
+                <div class="grid-item card monthly-leave-usage">
                     <div class="card-header">
-                        <h2>Team Leave Calendar</h2>
-                        <div class="header-actions">
-                            <select>
-                                <option>This Month</option>
-                                <option>Next Month</option>
-                            </select>
-                            <span class="material-icons">arrow_drop_down</span>
+                        <h3 class="card-title">Monthly Leave Usage</h3>
+                        <div class="card-actions">
+                            <span class="view-all-link">View statistics for all time</span>
+                            <i class="fas fa-chevron-right"></i>
                         </div>
                     </div>
-                    <div class="schedule-tabs">
-                        <button class="tab active">Upcoming</button>
-                        <button class="tab">My Team</button>
-                        <button class="tab">Company Holidays</button>
+                    <div class="chart-area">
+                        <img src="https://via.placeholder.com/600x200/F0F2F5/A0A3A6?text=Leave+Usage+Chart" alt="Monthly Leave Usage Chart" style="width:100%; height:auto; border-radius:10px;">
+                        </div>
+                </div>
+
+                <div class="grid-item card leave-balance-breakdown">
+                     <div class="card-header">
+                        <h3 class="card-title">Leave Balance</h3>
+                        <select class="filter-dropdown">
+                            <option>Annual</option>
+                            <option>Sick</option>
+                            <option>Casual</option>
+                            <option>Emergency</option>
+                        </select>
                     </div>
-                    <ul class="schedule-list">
-                        <?php if (!empty($teamUpcomingLeaves)): ?>
-                            <?php foreach ($teamUpcomingLeaves as $leave): ?>
-                                <li>
-                                    <div class="schedule-item">
-                                        <div class="schedule-time"><?php echo $leave['time']; ?></div>
-                                        <div class="schedule-details">
-                                            <h3><?php echo $leave['title']; ?></h3>
-                                            <p><?php echo $leave['reason']; ?></p>
-                                            <div class="schedule-meta">
-                                                <span class="material-icons">people</span> <?php echo htmlspecialchars($employeeDepartment); ?> Dept.
-                                            </div>
-                                        </div>
-                                        <span class="material-icons more-options">more_vert</span>
-                                    </div>
-                                </li>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <li><p>No upcoming team leaves found.</p></li>
-                        <?php endif; ?>
+                    <div class="balance-chart-summary">
+                        <div class="total-balance">
+                            <p class="total-value">20</p>
+                            <p class="total-label">Total Days</p>
+                        </div>
+                        <ul class="balance-list">
+                            <li><span class="dot annual"></span> Annual: 10 Days</li>
+                            <li><span class="dot sick"></span> Sick: 5 Days</li>
+                            <li><span class="dot casual"></span> Casual: 3 Days</li>
+                            <li><span class="dot emergency"></span> Emergency: 2 Days</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid-item card recent-leave-applications">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Leave Applications</h3>
+                        <a href="#" class="view-all-link">See All</a>
+                    </div>
+                    <ul class="application-list">
+                        <li>
+                            <div class="app-details">
+                                <p class="app-name">Annual Leave (5 days)</p>
+                                <span class="app-date">Submitted on Jul 25, 2025</span>
+                            </div>
+                            <span class="app-status pending">Pending</span>
+                        </li>
+                        <li>
+                            <div class="app-details">
+                                <p class="app-name">Sick Leave (1 day)</p>
+                                <span class="app-date">Submitted on Jul 20, 2025</span>
+                            </div>
+                            <span class="app-status approved">Approved</span>
+                        </li>
+                        <li>
+                            <div class="app-details">
+                                <p class="app-name">Casual Leave (2 days)</p>
+                                <span class="app-date">Submitted on Jul 18, 2025</span>
+                            </div>
+                            <span class="app-status approved">Approved</span>
+                        </li>
+                        <li>
+                            <div class="app-details">
+                                <p class="app-name">Emergency Leave (1 day)</p>
+                                <span class="app-date">Submitted on Jul 10, 2025</span>
+                            </div>
+                            <span class="app-status rejected">Rejected</span>
+                        </li>
                     </ul>
                 </div>
 
-                <div class="section-card leave-trend-card">
-                    <div class="card-header">
-                        <h2>My Leave Trend</h2>
-                        <span class="material-icons info-icon">info</span>
+                 <div class="grid-item card upcoming-holidays">
+                     <div class="card-header">
+                        <h3 class="card-title">Upcoming Holidays</h3>
+                        <a href="#" class="view-all-link">Full Calendar</a>
                     </div>
-                    <div class="average-kpi">70,32%</div> <div class="chart-area">
-                        <img src="https://via.placeholder.com/300x150/f0f0f0/888888?text=My+Leave+Trend+Chart" alt="My Leave Trend Chart" class="chart-placeholder">
-                    </div>
-                    <div class="chart-labels">
-                        <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
-                    </div>
+                    <ul class="holiday-list">
+                        <li>
+                            <div class="holiday-date">Aug 15</div>
+                            <div class="holiday-name">National Heroes' Day</div>
+                        </li>
+                        <li>
+                            <div class="holiday-date">Sep 01</div>
+                            <div class="holiday-name">Labor Day</div>
+                        </li>
+                        <li>
+                            <div class="holiday-date">Oct 20</div>
+                            <div class="holiday-name">Mashujaa Day</div>
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="section-card leave-balances-card">
-                    <div class="card-header">
-                        <h2>My Leave Balances</h2>
-                    </div>
-                    <div class="leave-balance-items">
-                        <div class="balance-item">
-                            <div class="balance-number"><?php echo $userLeaveBalances['annual']; ?> Days</div>
-                            <div class="balance-label">Annual Leave</div>
-                            <button class="request-btn">Request Leave</button>
-                        </div>
-                        <div class="balance-item">
-                            <div class="balance-number"><?php echo $userLeaveBalances['sick']; ?> Days</div>
-                            <div class="balance-label">Sick Leave</div>
-                            <button class="request-btn">Request Leave</button>
-                        </div>
-                        <div class="balance-item">
-                            <div class="balance-number"><?php echo $userLeaveBalances['casual']; ?> Days</div>
-                            <div class="balance-label">Casual Leave</div>
-                            <button class="request-btn">Request Leave</button>
-                        </div>
-                        <div class="balance-item">
-                            <div class="balance-number"><?php echo $userLeaveBalances['paternity']; ?> Days</div>
-                            <div class="balance-label">Paternity Leave</div>
-                            <button class="request-btn">Request Leave</button>
-                        </div>
-                        <div class="balance-item">
-                            <div class="balance-number"><?php echo $userLeaveBalances['compensatory']; ?> Days</div>
-                            <div class="balance-label">Compensatory Leave</div>
-                            <button class="request-btn">Request Leave</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card leave-distribution-card">
-                    <div class="card-header">
-                        <h2>Company Leave Type Distribution</h2> </div>
-                    <div class="distribution-chart">
-                        <div class="chart-segment segment-annual">40%</div>
-                        <div class="chart-segment segment-sick">30%</div>
-                        <div class="chart-segment segment-casual">30%</div>
-                    </div>
-                    <div class="distribution-legend">
-                        <div class="legend-item"><span class="color-box annual"></span> Annual</div>
-                        <div class="legend-item"><span class="color-box sick"></span> Sick</div>
-                        <div class="legend-item"><span class="color-box casual"></span> Casual</div>
-                        <div class="legend-item"><span class="color-box others"></span> Others (Maternity/Paternity)</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="list-leave-requests-section">
-                <div class="card-header">
-                    <h2>My Leave Requests</h2> <div class="header-actions">
-                        <span class="material-icons search-icon">search</span>
-                        <input type="text" placeholder="Search" class="search-input-inline">
-                    </div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>LEAVE TYPE</th>
-                            <th>STATUS</th>
-                            <th>START DATE</th>
-                            <th>END DATE</th>
-                            <th>DAYS</th>
-                            <th>REASON</th>
-                            <th>ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($myRecentLeaveRequests)): ?>
-                            <?php foreach ($myRecentLeaveRequests as $request): ?>
-                                <tr>
-                                    <td data-label="LEAVE TYPE"><?php echo htmlspecialchars($request['leave_type']); ?></td>
-                                    <td data-label="STATUS">
-                                        <?php
-                                        $statusClass = '';
-                                        switch ($request['status']) {
-                                            case 'pending': $statusClass = 'status-pending'; break;
-                                            case 'approved': $statusClass = 'status-approved'; break;
-                                            case 'rejected': $statusClass = 'status-rejected'; break;
-                                            default: $statusClass = ''; break;
-                                        }
-                                        ?>
-                                        <span class="status <?php echo $statusClass; ?>"><?php echo htmlspecialchars(ucfirst($request['status'])); ?></span>
-                                    </td>
-                                    <td data-label="START DATE"><?php echo htmlspecialchars(date('d M Y', strtotime($request['start_date']))); ?></td>
-                                    <td data-label="END DATE"><?php echo htmlspecialchars(date('d M Y', strtotime($request['end_date']))); ?></td>
-                                    <td data-label="DAYS"><?php echo (new DateTime($request['start_date']))->diff(new DateTime($request['end_date']))->days + 1; ?></td>
-                                    <td data-label="REASON"><?php echo htmlspecialchars(substr($request['reason'], 0, 50)); ?>...</td>
-                                    <td data-label="ACTION"><span class="material-icons more-options">more_horiz</span></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr><td colspan="7">No leave requests found for you.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
             </section>
         </main>
     </div>
