@@ -1,700 +1,682 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* dashboard.css */
 
-/* --- Root Variables for Homies Lab / Beige Theme Aesthetic --- */
+/* Define CSS Variables for consistent theming (Beige & Yellow) */
 :root {
-    /* Backgrounds & Main Colors (from Homies Lab dashboard.jpg) */
-    --primary-bg: #F0F2F5; /* Very light beige/off-white for main dashboard background (used for cards, not global body) */
-    --card-bg: #FFFFFF;    /* Pure white for all content cards */
-
-    /* Accent Colors (from Homies Lab dashboard.jpg) */
-    --accent-yellow: #FFC107; /* Bright yellow/orange for highlights */
-    --accent-purple: #6A6EE0; /* Deep violet/blue for primary accents (matching Homies Lab) */
-    --accent-green: #28A745;  /* Success indicator green */
-    --accent-red: #DC3545;    /* Danger/alert red */
-
-    /* Text Colors */
-    --text-dark: #333333;   /* Dark text for general content */
-    --text-medium: #777777; /* Medium grey for subtle text */
-    --text-light: #F0F0F0;  /* Very light grey for text on dark backgrounds */
-    --text-link: #555555;   /* Default link color */
-
-    /* Borders & Shadows (Soft, subtle, matching Homies Lab) */
-    --border-light: #E9ECEF; /* Light grey border */
-    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.04); /* Soft, subtle shadow */
-    --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.08); /* Slightly more prominent */
-    --shadow-header: 0 2px 8px rgba(0, 0, 0, 0.03); /* Lighter shadow for header */
-
-    /* Spacing & Radius */
-    --gap-spacing: 20px;
-    --card-padding: 25px;
-    --border-radius-large: 20px; /* For main containers and cards */
-    --border-radius-medium: 12px; /* For buttons, inputs, smaller cards */
-    --border-radius-small: 8px; /* For image thumbnails, list icons */
+    --color-background-light: #FDFBF8; /* Very light beige/off-white for body */
+    --color-surface-light: #FFFFFF; /* Pure white for main content background */
+    --color-text-dark: #1F2937; /* Dark gray for main headings */
+    --color-text-medium: #4B5563; /* Medium gray for general text */
+    --color-text-light: #6B7280; /* Lighter gray for secondary text/labels */
+    --color-accent-yellow: #E6B32E; /* Primary yellow accent from image */
+    --color-accent-green: #22C55E; /* Green for positive indicators (Approved status) */
+    --color-accent-red: #EF4444; /* Red for negative indicators (Rejected status) */
+    --color-active-blue: #4F46E5; /* Subtle blue for active states/links (e.g., LeaveFlow logo, active nav) */
+    --color-border-light: #E5E7EB; /* Light border color */
+    --color-shadow-light: rgba(0, 0, 0, 0.03); /* Very subtle shadow for "floating" effect */
+    --color-shadow-medium: rgba(0, 0, 0, 0.08); /* Slightly more prominent shadow on hover */
+    --color-placeholder-text: #9CA3AF; /* Placeholder text color */
 }
 
-/* --- Base Styles --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* Base styles for the body and overall layout */
 body {
     font-family: 'Inter', sans-serif;
-    color: var(--text-dark);
-    line-height: 1.6;
-    overflow-y: auto; /* Allow vertical scrolling */
-    min-height: 100vh;   /* Ensure body takes at least full viewport height, but can grow */
+    background-color: var(--color-background-light); /* Light beige background */
+    margin: 0;
+    padding: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: var(--gap-spacing); /* Add padding around the entire dashboard content */
-
-    /* --- ADDED/MODIFIED FOR BACKGROUND IMAGE --- */
-    /* Replace 'path/to/your/image.jpg' with the actual path to your desired background image */
-    background-image: url('assets/background.jpg'); /* Using a placeholder for now */
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    /* Background image from the provided dashboard.jpg */
+    /* IMPORTANT: Ensure dashboard.jpg is in the SAME folder as this dashboard.css file */
+    background-image: url('css/dashboard.jpg');
     background-size: cover; /* Cover the entire viewport */
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Prevent image repetition */
-    background-attachment: fixed; /* Keep image fixed when scrolling */
-    position: relative; /* Needed for the overlay to position correctly */
-    /* --- END ADDED/MODIFIED --- */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-attachment: fixed; /* Keep background fixed when scrolling */
+    color: var(--color-text-medium); /* Default text color */
 }
 
-/* --- ADDED BACKGROUND OVERLAY --- */
+/* Overlay for background image to add a subtle tint/darken effect for readability */
 .background-overlay {
-    position: fixed; /* Keep overlay fixed with viewport */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(240, 242, 245, 0.9); /* Opaque version of --primary-bg */
-    z-index: -1; /* Behind the dashboard container */
+    background-color: rgba(240, 242, 245, 0.7); /* Light gray overlay */
+    z-index: -1; /* Ensure it's behind content */
 }
-/* --- END ADDED BACKGROUND OVERLAY --- */
 
-
-/* --- Dashboard Container Layout (Main Grid) --- */
+/* Main dashboard container */
 .dashboard-container {
     display: flex;
-    flex-direction: column;
-    height: auto; /* Allow height to expand based on content */
-    width: 100%; /* Take full width within body padding */
-    max-width: 1500px; /* Still constrain max width for readability */
-    max-height: unset; /* Remove max height constraint */
-    background-color: transparent; /* No background for container itself, rely on cards */
-    border-radius: var(--border-radius-large);
-    overflow: visible; /* Allow content to overflow this container if needed, main scroll is on body */
-    box-shadow: var(--shadow-medium); /* Keep a subtle shadow on the container for definition */
-}
-
-/* --- Main Content Area (Now the only grid container) --- */
-.main-content {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    gap: var(--gap-spacing);
-    padding: var(--gap-spacing);
-    background-color: transparent; /* Main content area also transparent */
-    overflow: visible; /* Allow content to overflow this container, main scroll is on body */
-    height: auto; /* Allow height to expand */
     width: 100%;
+    max-width: 1600px; /* Max width to match the image's expansive feel */
+    background-color: var(--color-surface-light); /* White for content area */
+    border-radius: 1.5rem; /* Rounded corners for the main container */
+    box-shadow: 0 10px 30px var(--color-shadow-medium); /* Soft shadow */
+    margin: 2rem; /* Margin around the container */
+    overflow: hidden; /* Ensures rounded corners are respected */
+    min-height: calc(100vh - 4rem); /* Adjust based on margin, ensures it takes up most of the screen */
 }
 
-/* --- Main Header (Top Nav) --- */
-.main-header {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-large);
+/* Sidebar Navigation */
+.sidebar {
+    width: 280px; /* Fixed width for the sidebar */
+    background-color: var(--color-surface-light); /* White background */
+    padding: 2.5rem 1.5rem; /* Padding adjusted to match image */
     display: flex;
-    align-items: center;
-    padding: 15px var(--card-padding);
-    box-shadow: var(--shadow-header);
-    justify-content: space-between;
+    flex-direction: column;
+    border-right: 1px solid var(--color-border-light); /* Separator from main content */
+    flex-shrink: 0; /* Prevent shrinking */
+    box-shadow: 2px 0 10px var(--color-shadow-light); /* Subtle shadow for depth */
 }
 
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
-.header-logo-text {
-    font-size: 1.6em;
+/* Changed sidebar logo color from blue to dark text */
+.sidebar-logo {
+    font-size: 1.75rem;
     font-weight: 800;
-    color: var(--text-dark);
+    color: var(--color-text-dark); /* Changed to dark text color */
+    margin-bottom: 2.5rem;
+    text-align: center;
 }
 
-.floating-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-}
-
-.floating-nav ul li a {
-    display: flex;
-    align-items: center;
-    padding: 10px 18px;
-    color: var(--text-medium);
-    text-decoration: none;
-    border-radius: var(--border-radius-medium);
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-    font-weight: 500;
-    font-size: 0.9em;
-    background-color: transparent;
-}
-
-.floating-nav ul li a i {
-    margin-right: 8px;
-    font-size: 1em;
-    color: var(--text-medium);
-    transition: color 0.2s ease;
-}
-
-.floating-nav ul li.active a,
-.floating-nav ul li a:hover {
-    background-color: var(--primary-bg);
-    color: var(--accent-purple);
-    transform: translateY(-2px);
-}
-.floating-nav ul li.active a i,
-.floating-nav ul li a:hover i {
-    color: var(--accent-purple);
-}
-
-.floating-nav .nav-badge {
-    background-color: var(--accent-red);
-    color: white;
-    font-size: 0.7em;
-    padding: 2px 7px;
-    border-radius: 10px;
-    margin-left: 8px;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.search-bar {
+.sidebar-search {
     position: relative;
+    margin-bottom: 2rem;
 }
 
-.search-bar input {
-    padding: 10px 15px 10px 45px;
-    border: 1px solid var(--border-light);
-    border-radius: var(--border-radius-medium);
+.sidebar-search input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid var(--color-border-light);
+    border-radius: 0.75rem;
     outline: none;
-    font-size: 0.9em;
-    width: 250px;
-    background-color: var(--primary-bg);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    color: var(--text-dark);
+    background-color: #F9FAFB; /* Light background for search input */
+    color: var(--color-text-medium);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.search-bar input::placeholder {
-    color: var(--text-medium);
+.sidebar-search input::placeholder {
+    color: var(--color-placeholder-text); /* Lighter placeholder text */
 }
 
-.search-bar input:focus {
-    border-color: var(--accent-purple);
-    box-shadow: 0 0 0 3px rgba(106, 110, 224, 0.1);
+.sidebar-search input:focus {
+    border-color: var(--color-active-blue);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Blue focus ring */
 }
 
-.search-bar i {
+.sidebar-search .fas {
     position: absolute;
-    left: 18px;
+    left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-medium);
-    font-size: 0.9em;
+    color: var(--color-placeholder-text);
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 0.5rem;
+}
+
+/* Floating button style for sidebar navigation links */
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 0.75rem;
+    color: var(--color-text-light);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    background-color: var(--color-surface-light); /* Base background for floating button */
+    box-shadow: 0 2px 8px var(--color-shadow-light); /* Subtle shadow for floating effect */
+}
+
+/* Changed hover and active states to yellow */
+.sidebar-nav a:hover {
+    background-color: #FFFBEB; /* Very light yellow on hover */
+    color: var(--color-accent-yellow); /* Yellow text on hover */
+    box-shadow: 0 4px 12px var(--color-shadow-medium); /* More prominent shadow on hover */
+}
+
+.sidebar-nav a.active {
+    background-color: #FFFBEB; /* Active background - light yellow */
+    color: var(--color-accent-yellow); /* Active text color - primary yellow */
+    box-shadow: 0 4px 12px var(--color-shadow-medium); /* Active shadow */
+    font-weight: 600; /* Bolder for active */
+}
+
+.nav-badge {
+    background-color: var(--color-accent-red); /* Red badge for notifications */
+    color: var(--color-surface-light);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px; /* Pill shape */
+    margin-left: auto; /* Push badge to the right */
+}
+
+/* User Profile Summary at the bottom of the sidebar */
+.sidebar-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto; /* Pushes to the bottom of the sidebar */
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.sidebar-user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 2px solid var(--color-accent-yellow); /* Yellow border as in image */
+}
+
+.sidebar-user-info .name {
+    font-weight: 600;
+    color: var(--color-text-dark);
+}
+
+.sidebar-user-info .role {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+}
+
+.logout-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.75rem;
+    background-color: #F3F4F6; /* Light gray background */
+    color: var(--color-text-medium);
+    font-size: 1.25rem;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.logout-icon-button:hover {
+    background-color: var(--color-accent-red);
+    color: var(--color-surface-light);
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Gap between major sections */
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border-light); /* Lighter border for header */
+}
+
+.header-greeting h1 {
+    font-size: 2.5rem; /* Larger font size for greeting */
+    font-weight: 900; /* Extra bold to match image */
+    color: var(--color-text-dark);
+    margin: 0;
+}
+
+.header-greeting p {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    margin-top: 0.25rem;
+}
+
+.header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.notification-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.75rem;
+    background-color: #F3F4F6; /* Light gray background */
+    color: var(--color-text-medium);
+    font-size: 1.25rem;
+    text-decoration: none;
+    position: relative; /* For badge positioning */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.notification-icon-button:hover {
+    background-color: #E5E7EB;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--color-accent-red);
+    color: var(--color-surface-light);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 9999px;
+    line-height: 1;
 }
 
 .user-profile-summary {
     display: flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
+    gap: 0.75rem;
 }
 
-.user-profile-summary .user-info-text {
+.user-info-text {
     text-align: right;
 }
-.user-profile-summary .user-name {
+
+.user-name {
     font-weight: 600;
-    font-size: 0.9em;
-    color: var(--text-dark);
-}
-.user-profile-summary .user-role-header {
-    font-size: 0.7em;
-    color: var(--text-medium);
+    color: var(--color-text-dark);
+    font-size: 1rem;
 }
 
-.user-profile-summary .user-avatar-small {
-    width: 38px;
-    height: 38px;
-    border-radius: var(--border-radius-small);
+.user-role-header {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+}
+
+.user-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
     object-fit: cover;
-    border: 1px solid var(--border-light);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 2px solid var(--color-accent-yellow); /* Yellow border as in image */
 }
 
-.logout-icon-button {
-    background-color: transparent;
-    border: none;
-    font-size: 1.2em;
-    color: var(--text-medium);
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 50%;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-.logout-icon-button:hover {
-    background-color: var(--primary-bg);
-    color: var(--accent-red);
-}
-
-
-/* --- Dashboard Sections Grid (Main Content Grid Layout) --- */
-.dashboard-grid {
+/* Dashboard Content Grid - Focused on Leave Management */
+.dashboard-content-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 1.5fr;
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas:
-        "stat1 stat2 stat3 right-col-1"
-        "main-graph main-graph main-graph right-col-1"
-        "main-graph main-graph main-graph right-col-2"
-        "bottom-left bottom-left bottom-left right-col-2";
-    gap: var(--gap-spacing);
-    overflow: visible; /* Allows grid content to push overall page height */
-    flex-grow: 1;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+    gap: 1.5rem;
 }
 
-/* Assign Grid Areas to HTML elements */
-.stat-card:nth-child(1) { grid-area: stat1; }
-.stat-card:nth-child(2) { grid-area: stat2; }
-.stat-card:nth-child(3) { grid-area: stat3; }
-.monthly-leave-usage { grid-area: main-graph; }
-.leave-balance-breakdown { grid-area: right-col-1; }
-.recent-leave-applications { grid-area: right-col-2; }
-.upcoming-holidays { grid-area: bottom-left; }
-
-
-/* Common Card Styling */
-.card {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-large);
-    padding: var(--card-padding);
-    box-shadow: var(--shadow-light);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Cards still hide internal overflow for neatness */
-    border: 1px solid var(--border-light); /* Added subtle border */
+/* General styling for content sections (no "cards") */
+.key-stats-section,
+.leave-balance-breakdown-section,
+.recent-leave-applications-section,
+.upcoming-holidays-section,
+.team-upcoming-leaves-section {
+    background-color: var(--color-surface-light); /* White background for sections */
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px var(--color-shadow-light); /* Very subtle shadow for separation */
 }
 
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--gap-spacing);
+/* Key Leave Statistics Section */
+.key-stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    grid-column: 1 / -1; /* Span full width on larger screens */
 }
 
-.card-title {
-    font-size: 1.2em;
-    font-weight: 700;
-    color: var(--text-dark);
-}
-
-.card-actions {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.view-all-link {
-    font-size: 0.85em;
-    color: var(--text-medium);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-.view-all-link:hover {
-    color: var(--accent-purple);
-}
-
-.view-all-link i {
-    font-size: 0.8em;
-}
-
-.filter-dropdown {
-    padding: 8px 12px;
-    border: 1px solid var(--border-light);
-    border-radius: var(--border-radius-medium);
-    background-color: var(--primary-bg);
-    color: var(--text-dark);
-    font-size: 0.9em;
-    outline: none;
-    cursor: pointer;
-}
-.filter-dropdown:focus {
-    border-color: var(--accent-purple);
-}
-
-
-/* --- Key Stats Cards (Top Row) --- */
-.stat-card {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-large);
-    padding: var(--card-padding);
-    box-shadow: var(--shadow-light);
+.stat-item {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: space-between;
-    transition: transform 0.2s ease;
-}
-.stat-card:hover {
-    transform: translateY(-5px);
 }
 
-.stat-icon-wrap {
-    width: 50px;
-    height: 50px;
-    border-radius: var(--border-radius-small);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5em;
-    margin-bottom: 15px;
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: 0.25rem;
 }
 
-.stat-icon-wrap.yellow-bg { background-color: rgba(255, 193, 7, 0.1); color: var(--accent-yellow); }
-.stat-icon-wrap.blue-bg { background-color: rgba(106, 110, 224, 0.1); color: var(--accent-purple); }
-.stat-icon-wrap.purple-bg { background-color: rgba(102, 16, 242, 0.1); color: var(--accent-purple); }
-
-.stat-card .stat-title {
-    font-size: 0.9em;
-    color: var(--text-medium);
-    margin-bottom: 5px;
+.stat-label {
+    font-size: 0.95rem;
+    color: var(--color-text-light);
     font-weight: 500;
 }
 
-.stat-card .stat-value {
-    font-size: 1.8em;
-    font-weight: 800;
-    color: var(--text-dark);
+/* Leave Balance Breakdown Section */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
-.monthly-leave-usage .chart-area {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.monthly-leave-usage .chart-area img {
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
+.section-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin: 0;
 }
 
-.balance-chart-summary {
+.view-all-link {
+    font-size: 0.9rem;
+    color: var(--color-active-blue);
+    text-decoration: none;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    flex-grow: 1;
+    gap: 0.25rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.view-all-link:hover {
+    color: #6366F1; /* Slightly darker blue on hover */
+}
+
+.balance-summary {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
 }
 
 .total-balance {
-    background: linear-gradient(135deg, var(--accent-yellow), #FFD43B);
-    color: var(--text-dark);
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-light);
+    text-align: center;
+    flex-shrink: 0;
 }
-.total-balance .total-value {
-    font-size: 2.5em;
+
+.total-value {
+    font-size: 3rem; /* Large value */
     font-weight: 800;
+    color: var(--color-accent-yellow); /* Yellow for total days */
+    line-height: 1;
 }
-.total-balance .total-label {
-    font-size: 0.8em;
-    font-weight: 600;
-    opacity: 0.9;
+
+.total-label {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    font-weight: 500;
 }
 
 .balance-list {
     list-style: none;
-    width: 100%;
-    padding: 0 10px;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
+
 .balance-list li {
     display: flex;
     align-items: center;
-    font-size: 0.95em;
-    color: var(--text-dark);
-    margin-bottom: 8px;
-    font-weight: 500;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--color-text-medium);
 }
-.balance-list li:last-child {
-    margin-bottom: 0;
-}
-.balance-list .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-.balance-list .dot.annual { background-color: var(--accent-yellow); }
-.balance-list .dot.sick { background-color: var(--accent-green); }
-.balance-list .dot.casual { background-color: var(--accent-purple); }
-.balance-list .dot.emergency { background-color: var(--accent-red); }
 
+.balance-list .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+.dot.annual { background-color: #4F46E5; } /* Blue */
+.dot.sick { background-color: #22C55E; } /* Green */
+.dot.casual { background-color: #F97316; } /* Orange */
+.dot.emergency { background-color: #EF4444; } /* Red */
+
+/* Recent Leave Applications Section */
 .application-list {
     list-style: none;
-    flex-grow: 1;
-    overflow-y: auto; /* Internal scrolling */
-    padding-right: 10px;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
+
 .application-list li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px dashed var(--border-light);
-    transition: background-color 0.2s ease; /* For hover effect */
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--color-border-light); /* Dashed separator */
 }
+
 .application-list li:last-child {
-    border-bottom: none;
+    border-bottom: none; /* No border for the last item */
     padding-bottom: 0;
-}
-.application-list li:hover {
-    background-color: rgba(106, 110, 224, 0.03); /* Very light purple tint on hover */
-    border-radius: var(--border-radius-small);
 }
 
 .app-details {
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
+
 .app-name {
     font-weight: 600;
-    margin-bottom: 2px;
-    font-size: 0.95em;
-    color: var(--text-dark);
+    color: var(--color-text-dark);
+    margin-bottom: 0.25rem;
 }
+
 .app-date {
-    font-size: 0.8em;
-    color: var(--text-medium);
+    font-size: 0.85rem;
+    color: var(--color-text-light);
 }
 
 .app-status {
-    font-size: 0.8em;
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 5px 10px;
-    border-radius: var(--border-radius-small);
+    padding: 0.3rem 0.7rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
 }
-.app-status.pending { background-color: rgba(255, 193, 7, 0.1); color: var(--accent-yellow); }
-.app-status.approved { background-color: rgba(40, 167, 69, 0.1); color: var(--accent-green); }
-.app-status.rejected { background-color: rgba(220, 53, 69, 0.1); color: var(--accent-red); }
+.app-status.pending {
+    background-color: #FEF3C7; /* Light yellow for pending */
+    color: #D97706; /* Dark yellow text */
+}
+.app-status.approved {
+    background-color: #D1FAE5; /* Light green for approved */
+    color: var(--color-accent-green);
+}
+.app-status.rejected {
+    background-color: #FEE2E2; /* Light red for rejected */
+    color: var(--color-accent-red);
+}
 
+/* Upcoming Company Holidays Section */
 .holiday-list {
     list-style: none;
-    flex-grow: 1;
-    overflow-y: auto; /* Internal scrolling */
-    padding-right: 10px;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
+
 .holiday-list li {
     display: flex;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px dashed var(--border-light);
-    transition: background-color 0.2s ease; /* For hover effect */
+    gap: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--color-border-light);
 }
+
 .holiday-list li:last-child {
     border-bottom: none;
     padding-bottom: 0;
 }
-.holiday-list li:hover {
-    background-color: rgba(106, 110, 224, 0.03); /* Very light purple tint on hover */
-    border-radius: var(--border-radius-small);
-}
+
 .holiday-date {
-    font-size: 1.1em;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: var(--accent-purple);
-    margin-right: 15px;
-    min-width: 60px;
+    color: var(--color-active-blue); /* Blue for dates */
+    flex-shrink: 0;
+    width: 70px; /* Fixed width for date alignment */
 }
+
 .holiday-name {
-    font-size: 0.95em;
-    font-weight: 500;
-    color: var(--text-dark);
+    font-size: 0.95rem;
+    color: var(--color-text-medium);
 }
 
-/* --- Scrollbar Styling (Modern, for internal scrolling elements) --- */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+/* Team's Upcoming Leaves Section */
+.team-leave-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.02);
-    border-radius: 10px;
+.team-leave-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--color-border-light);
 }
 
-::-webkit-scrollbar-thumb {
-    background: #D1D1D1;
-    border-radius: 10px;
+.team-leave-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #B0B0B0;
+.member-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.member-name {
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.leave-info {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+}
+
+.leave-status {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+/* Status colors are reused from app-status */
+.leave-status.pending {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+.leave-status.approved {
+    background-color: #D1FAE5;
+    color: var(--color-accent-green);
 }
 
 
-/* --- Responsive Adjustments --- */
-
-/* Tablet & Smaller Desktop Screens (approx 993px - 1200px) */
+/* Responsive adjustments */
 @media (max-width: 1200px) {
     .dashboard-container {
-        width: calc(100% - 30px);
-        padding: 0;
+        flex-direction: column;
+        margin: 1rem;
     }
-    .main-content { gap: 15px; padding: 15px; }
-    .main-header { padding: 12px 20px; }
-    .header-left { gap: 20px; }
-    .header-logo-text { font-size: 1.4em; }
-    .floating-nav ul { gap: 10px; }
-    .floating-nav ul li a { padding: 8px 15px; font-size: 0.85em; }
-    .header-right { gap: 15px; }
-    .search-bar input { width: 200px; padding: 8px 12px 8px 40px; }
-    .search-bar i { left: 15px; }
-    .user-profile-summary .user-name { font-size: 0.85em; }
-    .user-profile-summary .user-role-header { font-size: 0.65em; }
-    .user-profile-summary .user-avatar-small { width: 35px; height: 35px; }
-    .logout-icon-button { font-size: 1.1em; padding: 8px; }
-
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr) 1.2fr;
-        grid-template-rows: auto auto 1fr;
-        grid-template-areas:
-            "stat1 stat2 right-col-1"
-            "stat3 main-graph main-graph"
-            "bottom-left bottom-left right-col-2";
-        gap: 15px;
-    }
-    .stat-card { padding: 20px; }
-    .stat-card .stat-value { font-size: 1.6em; }
-    .stat-icon-wrap { width: 45px; height: 45px; font-size: 1.3em; }
-    .card { padding: 20px; border-radius: 15px; }
-    .card-title { font-size: 1.1em; }
-    .view-all-link { font-size: 0.8em; }
-    .total-balance { width: 100px; height: 100px; }
-    .total-balance .total-value { font-size: 2em; }
-    .total-balance .total-label { font-size: 0.7em; }
-    .balance-list li { font-size: 0.9em; }
-    .app-name, .holiday-name { font-size: 0.9em; }
-}
-
-/* Medium Tablets / Large Mobiles (approx 768px - 992px) */
-@media (max-width: 992px) {
-    body {
-        overflow-y: auto; /* Ensure body scrolls on smaller screens */
-        align-items: flex-start; /* Align dashboard to top on mobile */
-        padding: 10px; /* Adjust body padding for mobile */
-    }
-    .background-overlay { background-color: rgba(240, 242, 245, 0.95); } /* Slightly more opaque overlay on smaller screens */
-    .dashboard-container {
-        height: auto;
-        width: 100%; /* Take full width minus body padding */
-        max-width: unset;
-        max-height: unset;
-        margin: 0 auto; /* Remove explicit margin, padding from body handles it */
-    }
-    .main-content { padding: 15px; gap: 15px; }
-    .main-header {
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border-light);
+        padding-bottom: 1rem;
+        flex-direction: row;
         flex-wrap: wrap;
-        height: auto;
-        padding: 10px 15px;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
     }
-    .header-left { flex-direction: column; align-items: flex-start; gap: 10px; width: 100%; }
-    .header-logo-text { margin-bottom: 10px; }
-    .floating-nav { width: 100%; }
-    .floating-nav ul { flex-wrap: wrap; justify-content: flex-start; gap: 8px; }
-    .floating-nav ul li { flex-shrink: 0; }
-    .floating-nav ul li a { padding: 8px 12px; font-size: 0.8em; }
-
-    .header-right {
+    .sidebar-logo, .sidebar-search {
+        margin-bottom: 0;
+    }
+    .sidebar-nav {
+        width: 100%;
+        order: 3; /* Push nav below logo/search */
+    }
+    .sidebar-nav ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .sidebar-nav li {
+        margin-bottom: 0;
+    }
+    .sidebar-user-profile {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+        order: 2; /* Position next to search/logo */
+    }
+    .main-content {
+        padding: 1.5rem;
+    }
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-right-actions {
         width: 100%;
         justify-content: space-between;
-        margin-top: 15px;
-        gap: 10px;
+        margin-top: 1rem;
     }
-    .search-bar { flex-grow: 1; order: 2; }
-    .search-bar input { width: 100%; }
-    .user-profile-summary { order: 1; flex-shrink: 0; }
-    .logout-icon-button { order: 3; flex-shrink: 0; }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        overflow-y: visible; /* Allow content to push overall page height */
-        padding-bottom: 0;
-        grid-template-areas:
-            "stat1"
-            "stat2"
-            "stat3"
-            "main-graph"
-            "right-col-1"
-            "right-col-2"
-            "bottom-left";
-    }
-    .stat-card { margin-bottom: 10px; }
-    .chart-area img { height: 180px; }
-    .total-balance { width: 110px; height: 110px; }
-    .total-balance .total-value { font-size: 2.2em; }
-    .balance-list { padding: 0; }
-    .application-list, .holiday-list { padding-right: 0; }
 }
 
-/* Small Mobiles (approx < 768px) */
-@media (max-width: 576px) {
-    .dashboard-container { width: 100%; margin: 0 auto; }
-    .main-content { padding: 10px; gap: 10px; }
-    .main-header { padding: 10px; }
-    .header-left { gap: 5px; }
-    .header-logo-text { font-size: 1.1em; margin-bottom: 5px; }
-    .floating-nav ul { gap: 5px; }
-    .floating-nav ul li a { padding: 6px 10px; font-size: 0.75em; }
-    .floating-nav .nav-badge { padding: 1px 5px; font-size: 0.6em; }
-
-    .header-right { margin-top: 10px; gap: 5px; }
-    .search-bar input { padding: 6px 10px 6px 35px; font-size: 0.8em; }
-    .search-bar i { left: 10px; font-size: 0.8em; }
-    .user-profile-summary .user-name { font-size: 0.8em; }
-    .user-profile-summary .user-role-header { font-size: 0.6em; }
-    .user-profile-summary .user-avatar-small { width: 30px; height: 30px; }
-    .logout-icon-button { font-size: 1em; padding: 5px; }
-
-    .stat-card { padding: 12px; }
-    .stat-card .stat-value { font-size: 1.4em; }
-    .stat-card .stat-title { font-size: 0.75em; }
-    .stat-icon-wrap { width: 35px; height: 35px; font-size: 1.1em; margin-bottom: 10px; }
-
-    .card { padding: 12px; border-radius: 10px; }
-    .card-header { margin-bottom: 10px; }
-    .card-title { font-size: 0.9em; }
-    .view-all-link { font-size: 0.7em; }
-
-    .total-balance { width: 80px; height: 80px; }
-    .total-balance .total-value { font-size: 1.6em; }
-    .total-balance .total-label { font-size: 0.65em; }
-    .balance-list li { font-size: 0.8em; }
-    .app-name, .holiday-name { font-size: 0.8em; }
-    .app-date, .app-status, .holiday-date { font-size: 0.7em; }
-    .holiday-date { min-width: 45px; }
+@media (max-width: 768px) {
+    .dashboard-container {
+        margin: 0.5rem;
+        border-radius: 1rem;
+    }
+    .main-content {
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    .header-greeting h1 {
+        font-size: 1.75rem;
+    }
+    .header-greeting p {
+        font-size: 0.9rem;
+    }
+    .sidebar-nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .key-stats-section {
+        grid-template-columns: 1fr; /* Single column for stats on small screens */
+    }
+    .balance-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .total-balance {
+        text-align: left;
+        width: 100%;
+    }
 }

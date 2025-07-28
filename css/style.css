@@ -1,374 +1,235 @@
 /* Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Root & Body Styling */
-html, body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden; /* Prevent unwanted scrollbars due to full-bleed background */
-    font-family: 'Inter', sans-serif;
-    color: #1e1e1e; /* Default text color for the page */
-}
-
+/* Body */
 body {
-    background: url('../assets/background.jpg') no-repeat center center / cover;
-    display: flex;
-    flex-direction: column; /* Allows navbar and hero to stack */
-    min-height: 100vh; /* Ensure body takes full height */
+  font-family: 'Inter', sans-serif;
+  background: url('../assets/background.jpg') no-repeat center center / cover;
+  height: 100vh;
+  overflow: hidden;
+  color: #1e1e1e;
 }
 
 /* Navbar */
 .navbar {
-    width: 100%;
-    padding: 25px 60px; /* Slightly adjusted padding */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 100;
-    position: relative; /* Changed from absolute to relative to simplify flow */
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 30px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Slightly reduced gap */
-    font-size: 1.5rem; /* Slightly smaller logo text */
-    font-weight: 700; /* Playfair Display is already bold */
-    font-family: 'Playfair Display', serif;
-    color: #1e1e1e;
-    letter-spacing: 0.5px; /* Subtle letter spacing */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.6rem;
+  font-weight: bold;
+  font-family: 'Playfair Display', serif;
+  color: #1e1e1e;
 }
 
 .logo-icon {
-    height: 45px; /* Slightly smaller icon */
-    width: auto;
-    object-fit: contain;
+  height: 48px;
+  width: auto;
+  object-fit: contain;
 }
 
 .navbar ul {
-    list-style: none;
-    display: flex;
-    gap: 2.2rem; /* Slightly more spacing */
+  list-style: none;
+  display: flex;
+  gap: 2rem;
 }
 
 .navbar ul li a {
-    text-decoration: none;
-    color: #4a4a4a; /* Softer color for links */
-    font-size: 0.9rem;
-    font-weight: 500; /* Medium weight */
-    transition: color 0.3s ease, transform 0.2s ease;
-    position: relative;
-    padding-bottom: 5px; /* Space for underline effect */
+  text-decoration: none;
+  color: #1e1e1e;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .navbar ul li a:hover {
-    color: #a6795b;
-    transform: translateY(-2px); /* Slight lift on hover */
+  color: #a6795b;
 }
-
-/* Underline effect for nav links */
-.navbar ul li a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #a6795b;
-    transition: width 0.3s ease;
-}
-
-.navbar ul li a:hover::after {
-    width: 100%;
-}
-
 
 /* Hero Section */
 .hero {
-    flex: 1; /* Allows hero to take remaining vertical space */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 60px; /* Consistent side padding with navbar */
-    gap: 5rem; /* Increased gap between left and right sections */
-    position: relative; /* For potential absolute positioning of elements */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  padding: 120px 80px 60px;
+  gap: 3rem;
 }
 
 /* Hero Left */
 .hero-left {
-    flex: 1; /* Allows it to grow */
-    max-width: 55%; /* Controls its maximum width */
-    padding-bottom: 50px; /* Adjust if needed to align vertically with cards */
+  max-width: 50%;
 }
 
 .hero-left h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 4.8rem; /* Larger, more impactful */
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 0.8rem;
-    color: #1e1e1e;
-    line-height: 1; /* Tighter line height for large headings */
-    letter-spacing: -1px; /* Subtle negative letter spacing for modern feel */
+  font-family: 'Playfair Display', serif;
+  font-size: 4.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  color: #1e1e1e;
 }
 
 .hero-left p {
-    font-family: 'Inter', sans-serif; /* Consistent font */
-    font-style: normal; /* Removed italic for a cleaner look */
-    font-size: 1.05rem; /* Slightly larger */
-    font-weight: 300; /* Light weight for subtitle */
-    color: #555; /* Softer grey */
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
+  font-style: italic;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 2rem;
 }
 
 .btn-start {
-    background-color: #a6795b;
-    color: #fff;
-    padding: 1.1rem 2.5rem; /* Larger padding */
-    text-decoration: none;
-    border-radius: 50px; /* More pill-shaped */
-    font-weight: 600;
-    font-size: 1.05rem; /* Slightly larger text */
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother transition curve */
-    box-shadow: 0 10px 25px rgba(166, 121, 91, 0.3); /* Brand color shadow */
+  background-color: #a6795b;
+  color: #fff;
+  padding: 1rem 2.2rem;
+  text-decoration: none;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .btn-start:hover {
-    transform: translateY(-4px) scale(1.02); /* More dynamic lift and slight scale */
-    background-color: #8c6149;
-    box-shadow: 0 15px 35px rgba(166, 121, 91, 0.4); /* Stronger shadow on hover */
+  transform: scale(1.05);
+  background-color: #8c6149;
 }
 
-/* === MODERNIZED RIGHT SIDE FEATURE CARDS === */
-
-.feature-cards {
-    flex: 0 0 45%; /* Give it a fixed proportion of the hero's width */
-    display: flex;
-    flex-direction: column;
-    gap: 30px; /* Increased spacing between cards */
-    align-items: flex-start; /* Aligns cards to the left within their column */
-    padding-top: 50px; /* Adjust vertical alignment with hero-left */
-    padding-bottom: 50px;
+/* Feature Column (Right Panel) */
+.feature-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100%;
+  /* --- UPDATED FOR SHIFTING RIGHT --- */
+  padding: 2rem 4rem 2rem 8rem; /* Increased right padding, reduced left to shift */
+  /* --- END UPDATED --- */
+  flex: 0 0 55%;
 }
 
-.feature-card {
-    background: rgba(255, 255, 255, 0.7); /* More transparent for a 'glass' look */
-    backdrop-filter: blur(15px); /* Increased blur for glassmorphism */
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle white border */
-    padding: 30px; /* More generous padding */
-    border-radius: 20px; /* Modern, softer corners */
-    width: 420px; /* Optimal width for readability */
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08); /* Broader, softer shadow for floating */
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                background 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Align icon, title, text to the left */
-    gap: 12px; /* Space between card elements */
-    cursor: pointer;
-    position: relative;
-    overflow: hidden; /* For the ::before hover effect */
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  /* --- UPDATED FOR SHRINKING --- */
+  width: auto; /* Allow content to dictate width */
+  max-width: 300px; /* Reduced from 380px to shrink */
+  /* --- END UPDATED --- */
+  animation: fadeInUp 0.6s ease forwards;
+  text-align: left;
+  cursor: pointer;
 }
 
-.feature-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -120%; /* Start further left */
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); /* Stronger highlight */
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother shine transition */
+/* Icons */
+.feature-item i {
+  font-size: 3.5rem;
+  color: #a6795b;
+  margin-bottom: 0.5rem;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.feature-card:hover::before {
-    left: 120%; /* End further right */
+.feature-item:hover i {
+  transform: translateY(-5px);
+  color: #8c6149;
 }
 
-.feature-card:hover {
-    transform: translateY(-12px) scale(1.01); /* More pronounced lift, subtle scale */
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15); /* Stronger, deeper shadow for enhanced float */
-    background: rgba(255, 255, 255, 0.95); /* Less transparent on hover for focus */
+/* Titles */
+.feature-item h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: #1e1e1e;
+  margin: 0;
+  line-height: 1.2;
 }
 
-/* Icon Wrapper Styling */
-.icon-wrapper {
-    width: 60px; /* Larger icon container */
-    height: 60px;
-    border-radius: 15px; /* More pronounced rounded square */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px; /* Adjusted space below icon */
-    position: relative; /* For potential inner shadow/gradient */
-    overflow: hidden; /* Ensures inner shadow is clipped */
-    /* Subtle inner shadow for depth (Neumorphism-like) */
-    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05), inset -2px -2px 5px rgba(255,255,255,0.4);
+/* Descriptions */
+.feature-item p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 260px; /* Reduced from 300px to match smaller block width */
 }
 
-/* Specific background colors for icon wrappers - Modern pastels */
-.blue-icon-bg {
-    background: linear-gradient(135deg, #e0f7fa, #b3e5fc); /* Soft gradient */
-}
-.green-icon-bg {
-    background: linear-gradient(135deg, #e8f5e9, #c8e6c9); /* Soft gradient */
-}
-.orange-icon-bg {
-    background: linear-gradient(135deg, #fff3e0, #ffe0b2); /* Soft gradient */
-}
-
-/* Font Awesome Icon Styling */
-.icon-wrapper i {
-    font-size: 28px; /* Larger icon size */
-    transition: transform 0.3s ease; /* For bounce on hover */
-}
-
-/* Specific icon colors - More vibrant */
-.blue-icon-bg i {
-    color: #03a9f4; /* Bright blue */
-}
-.green-icon-bg i {
-    color: #4CAF50; /* Vibrant green */
-}
-.orange-icon-bg i {
-    color: #FF9800; /* Rich orange */
-}
-
-.feature-card:hover .icon-wrapper i {
-    transform: scale(1.1); /* Subtle bounce effect on icon */
-}
-
-
-.feature-card h4 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600; /* Semibold */
-    font-size: 1.45rem; /* Larger, more impactful title */
-    color: #1e1e1e;
-    margin-bottom: 5px; /* Tighten space to description */
-    letter-spacing: -0.2px; /* Subtle tightening */
-}
-
-.feature-card p {
-    font-family: 'Inter', sans-serif;
-    font-weight: 400; /* Regular weight */
-    font-size: 1rem; /* Clear, legible size */
-    color: #555; /* Softer grey for body text */
-    line-height: 1.65; /* Improved line height for readability */
-    margin: 0;
-}
-
-/* Keyframe Animations */
 @keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive Adjustments */
 @media screen and (max-width: 1024px) {
-    .hero {
-        flex-direction: column; /* Stack sections vertically */
-        padding: 40px;
-        justify-content: center; /* Center content vertically */
-        align-items: center; /* Center horizontally */
-        gap: 3rem; /* Reduce gap when stacked */
-    }
-    .hero-left {
-        max-width: 80%; /* Allow left content to take more width */
-        text-align: center; /* Center align text on smaller screens */
-        padding-bottom: 30px;
-    }
-    .hero-left h1 {
-        font-size: 3.5rem; /* Adjust heading size */
-    }
-    .hero-left p {
-        font-size: 0.95rem;
-    }
-    .navbar {
-        padding: 20px 40px; /* Adjust navbar padding */
-    }
-    .navbar ul {
-        gap: 1.5rem; /* Smaller gap for nav items */
-    }
-    .feature-cards {
-        align-items: center; /* Center cards in the column */
-        padding-top: 0; /* Remove top padding when stacked */
-        padding-bottom: 0;
-        flex: none; /* Remove flex sizing */
-        width: 100%; /* Take full width */
-    }
-    .feature-card {
-        width: 100%;
-        max-width: 400px; /* Constrain width for mobile readability */
-        padding: 25px; /* Slightly less padding */
-    }
+  .hero {
+    flex-direction: column;
+    padding: 100px 40px 40px;
+    height: auto;
+  }
+  .hero-left {
+    max-width: 100%;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .hero-left h1 {
+    font-size: 3rem;
+  }
+  .hero-left p {
+    font-size: 0.9rem;
+  }
+  .feature-column {
+    align-items: center;
+    padding: 2rem 20px;
+    flex: 1;
+  }
+  .feature-item {
+    align-items: center;
+    text-align: center;
+    max-width: 320px; /* Adjusted for smaller screens too */
+  }
+  .feature-item p {
+    max-width: 80%;
+  }
+  .navbar {
+    padding: 20px 30px;
+  }
+  .navbar ul {
+    gap: 1rem;
+  }
 }
 
 @media screen and (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .navbar ul {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-    }
-    .hero-left h1 {
-        font-size: 2.8rem;
-    }
-    .feature-card {
-        border-radius: 15px; /* More compact rounding */
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Slightly less dramatic shadow */
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .hero {
-        padding: 20px;
-        gap: 2rem;
-    }
-    .hero-left h1 {
-        font-size: 2.2rem;
-        line-height: 1.1;
-    }
-    .hero-left p {
-        font-size: 0.9rem;
-    }
-    .btn-start {
-        padding: 0.9rem 2rem;
-        font-size: 0.95rem;
-    }
-    .feature-card {
-        padding: 20px;
-        width: 95%; /* Even narrower on very small screens */
-    }
-    .icon-wrapper {
-        width: 50px;
-        height: 50px;
-        border-radius: 10px;
-    }
-    .icon-wrapper i {
-        font-size: 24px;
-    }
-    .feature-card h4 {
-        font-size: 1.25rem;
-    }
-    .feature-card p {
-        font-size: 0.88rem;
-        line-height: 1.5;
-    }
+  .navbar {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .hero-left h1 {
+    font-size: 2.5rem;
+  }
+  .feature-item i {
+    font-size: 3rem;
+  }
+  .feature-item h4 {
+    font-size: 1.4rem;
+  }
 }

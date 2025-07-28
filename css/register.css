@@ -5,26 +5,35 @@
 
 /* General Body & Root Styles */
 :root {
-    --primary-bg-color: #f7f3ed; /* Light beige/off-white background */
+    --primary-bg-color: #D0C0B0; /* Changed to a softer, almost brown */
     --form-bg-color: #ffffff;
-    --accent-yellow: #FFBD00; /* Adjusted to a slightly deeper, warmer yellow/orange from theme */
-    --accent-yellow-dark: #E6A800; /* Darker shade for hover */
-    --dark-text: #333333;
-    --medium-text: #555555;
-    --light-text: #777777;
-    --placeholder-text: #aaaaaa;
-    --border-color: #e0e0e0;
-    --blue-button: #3B82F6; /* For 'Get in touch' */
-    --card-shadow: rgba(0, 0, 0, 0.08); /* Slightly stronger shadow */
-    --light-shadow: rgba(0, 0, 0, 0.15); /* Slightly stronger shadow for smaller cards */
-    --text-on-accent: #333333; /* Dark text for yellow buttons/highlights */
+    --accent-yellow: #FFBD00;
+    --accent-yellow-dark: #E6A800;
+    --dark-text: #222222; /* Slightly darker for better contrast */
+    --medium-text: #444444; /* Adjusted for new background */
+    --light-text: #666666; /* Adjusted for new background */
+    --placeholder-text: #999999; /* Adjusted for new background */
+    --border-color: #d0d0d0; /* Slightly darker border for clarity */
+    --blue-button: #3B82F6;
+    --card-shadow: rgba(0, 0, 0, 0.1); /* Slightly more prominent shadow */
+    --light-shadow: rgba(0, 0, 0, 0.2); /* Slightly more prominent shadow for smaller cards */
+    --text-on-accent: #333333;
 }
 
+/* ... rest of your register.css file remains unchanged ... */
 html, body {
     margin: 0;
     padding: 0;
     font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--primary-bg-color);
+
+    /* Background Image Properties */
+    background-image: url('../assets/register.jpg'); /* <-- IMPORTANT: Update this path */
+    background-size: cover; /* Ensures the image covers the entire viewport */
+    background-position: center center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from tiling */
+    background-attachment: fixed; /* Keeps the background fixed when content might scroll */
+    background-color: #D0C0B0; /* Fallback color in case the image doesn't load */
+
     color: var(--dark-text);
     line-height: 1.6;
     height: 100%;
@@ -261,16 +270,22 @@ html, body {
     box-sizing: border-box;
 }
 
+/* Right Panel - Illustration/Calendar */
+/* ... (existing .right-panel rule above this line - no change to .right-panel) ... */
+
 .illustration-container {
     position: relative;
-    width: 100%;
-    max-width: 600px; /* Max width for the illustration container */
-    height: 100%;
-    min-height: 500px;
+    width: 100%; /* Keep this at 100% to allow max-width to control it */
+    /* ADJUSTED FOR SMALLER SIZE IN REGISTER PAGE */
+    max-width: 480px; /* Reduced from 600px, matches a bit smaller than login's 380px (due to more content) */
+    height: 450px; /* Set a fixed height, reduced from 100% and 500px min-height */
+    min-height: 300px; /* Ensure it doesn't get too small initially */
+    /* END ADJUSTED */
     overflow: hidden;
     border-radius: 20px;
     box-shadow: 0 15px 40px var(--card-shadow);
     box-sizing: border-box;
+    margin: auto; /* Add this to center it horizontally within .right-panel */
 }
 
 /* Hide specific text labels by class or direct element type */

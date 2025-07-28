@@ -70,13 +70,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <header class="navbar">
             <div class="nav-left">
                 <span class="logo">SMART LEAVE</span>
-                <span class="status">Leave Automated</span>
+                <span class="status">Leave Application Automated</span>
             </div>
             <div class="nav-right">
                 <span class="nav-icon"><i class="far fa-bookmark"></i></span>
                 <span class="nav-icon"><i class="far fa-heart"></i></span>
                 <span class="nav-icon"><i class="fas fa-link"></i></span>
-                <button class="contact-btn">Get in touch</button>
             </div>
         </header>
 
@@ -98,24 +97,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php unset($_SESSION['login_success']); ?>
 <?php endif; ?>
 
+<form action="login.php" method="POST">
+    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
 
-                    <form action="login.php" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+    </div>
 
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required placeholder="youremail@example.com" value="<?php echo htmlspecialchars($_SESSION['old_email'] ?? ''); unset($_SESSION['old_email']); ?>">
-                        </div>
+    <div class="form-group password-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" required>
+            <span class="password-toggle" id="passwordToggle">
+                <i class="fas fa-eye"></i>
+            </span>
+        </div>
+    </div>
 
-                        <div class="form-group password-group">
-                            <label for="password">Password</label>
-                            <div class="password-wrapper">
-                                <input type="password" id="password" name="password" required>
-                                <span class="password-toggle" id="passwordToggle">
-                                    <i class="fas fa-eye"></i>
-                                </span>
-                            </div>
-                        </div>
 
                         <div class="form-options">
                             <div class="remember-me">
@@ -131,41 +130,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p class="signup-link">Don't have an account? <a href="register.php">Sign Up</a></p>
                 </div>
             </section>
-
-            <section class="right-panel">
-                <div class="illustration-container">
-                    <img src="assets/login_background.jpg" alt="Login illustration" class="background-illustration">
-                    <div class="overlay-elements">
-                        <div class="inbox-message-card">
-                            <div class="card-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="card-content">
-                                <p class="card-title">You have new messages</p>
-                                <p class="card-subtitle">Check your inbox for updates</p>
-                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
         </main>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const passwordField = document.getElementById('password');
-            const passwordToggle = document.getElementById('passwordToggle');
-
-            if (passwordField && passwordToggle) {
-                passwordToggle.addEventListener('click', function () {
-                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordField.setAttribute('type', type);
-                    this.querySelector('i').classList.toggle('fa-eye');
-                    this.querySelector('i').classList.toggle('fa-eye-slash');
-                });
-            }
-        });
-    </script>
-
+    
 </body>
 </html>

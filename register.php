@@ -71,13 +71,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <header class="navbar">
             <div class="nav-left">
                 <span class="logo">SMART LEAVE</span>
-                <span class="status">Leave Automated</span>
+                <span class="status">Leave Application Automated</span>
             </div>
             <div class="nav-right">
                 <span class="nav-icon"><i class="far fa-bookmark"></i></span>
                 <span class="nav-icon"><i class="far fa-heart"></i></span>
                 <span class="nav-icon"><i class="fas fa-link"></i></span>
-                <button class="contact-btn">Get in touch</button>
             </div>
         </header>
 
@@ -85,19 +84,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <section class="left-panel">
                 <div class="form-card">
                     <h2>Create an account</h2>
-                    <p class="subtitle">Sign up and get 30-day free trial</p>
 
                     <form action="register.php" method="POST">
                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
 
                         <div class="form-group">
                             <label for="fullName">Full Name</label>
-                          <input type="text" id="name" name="name" required placeholder="John Doe">
+                          <input type="text" id="name" name="name">
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required placeholder="you@example.com">
+                            <input type="email" id="email" name="email">
                         </div>
 
                         <div class="form-group password-group">
@@ -129,51 +127,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php echo $error; ?>
     </div>
 <?php endif; ?>
-
-
-            <section class="right-panel">
-                <div class="illustration-container">
-                    <img src="assets/background.jpg" alt="Login illustration" class="background-illustration">
-                    <div class="overlay-elements">
-                        <div class="task-review-card">
-                            <span class="yellow-banner"></span>
-                            <p class="card-title">Task Review With Team</p>
-                            <p class="card-time">10:00–11:00 am</p>
-                        </div>
-
-                        <div class="calendar-card">
-                            <div class="calendar-header">
-                                <span class="month-day">Sun</span>
-                                <span class="month-day">Mon</span>
-                                <span class="month-day">Tue</span>
-                                <span class="month-day">Wed</span>
-                                <span class="month-day">Thu</span>
-                                <span class="month-day">Fri</span>
-                                <span class="month-day">Sat</span>
-                            </div>
-                            <div class="calendar-grid">
-                                <span>22</span><span>23</span><span>24</span><span>25</span>
-                                <span class="highlighted-day">26</span>
-                                <span class="highlighted-day">27</span>
-                                <span>28</span>
-                            </div>
-                        </div>
-
-                        <div class="daily-meeting-card">
-                            <p class="card-title">Daily Meeting</p>
-                            <p class="card-time">09:00–10:00 am</p>
-                        </div>
-
-                        <div class="avatars">
-                            <img src="assets/avatar1.jpg" alt="Avatar 1" class="avatar">
-                            <img src="assets/avatar2.jpg" alt="Avatar 2" class="avatar">
-                            <img src="assets/avatar3.jpg" alt="Avatar 3" class="avatar">
-                            </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
