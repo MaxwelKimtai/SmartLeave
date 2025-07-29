@@ -1,682 +1,807 @@
-/* dashboard.css */
+/* Import Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Define CSS Variables for consistent theming (Beige & Yellow) */
+/* Variables for consistent styling - REVERTED TO ORIGINAL DASHBOARD.JPG THEME COLORS */
 :root {
-    --color-background-light: #FDFBF8; /* Very light beige/off-white for body */
-    --color-surface-light: #FFFFFF; /* Pure white for main content background */
-    --color-text-dark: #1F2937; /* Dark gray for main headings */
-    --color-text-medium: #4B5563; /* Medium gray for general text */
-    --color-text-light: #6B7280; /* Lighter gray for secondary text/labels */
-    --color-accent-yellow: #E6B32E; /* Primary yellow accent from image */
-    --color-accent-green: #22C55E; /* Green for positive indicators (Approved status) */
-    --color-accent-red: #EF4444; /* Red for negative indicators (Rejected status) */
-    --color-active-blue: #4F46E5; /* Subtle blue for active states/links (e.g., LeaveFlow logo, active nav) */
-    --color-border-light: #E5E7EB; /* Light border color */
-    --color-shadow-light: rgba(0, 0, 0, 0.03); /* Very subtle shadow for "floating" effect */
-    --color-shadow-medium: rgba(0, 0, 0, 0.08); /* Slightly more prominent shadow on hover */
-    --color-placeholder-text: #9CA3AF; /* Placeholder text color */
+    --primary-yellow: #FFC107; /* The vibrant yellow from the original dashboard.jpg */
+    --accent-yellow-light: #FFEB3B; /* Lighter yellow for subtle accents */
+    
+    --dark-grey: #333333; /* Dark text/element color */
+    --medium-grey: #666666; /* Medium grey for secondary text */
+    --light-grey: #e0e0e0; /* Light grey for borders */
+    --very-light-grey-bg: #f8f8f8; /* A very light grey for subtle backgrounds/hover */
+
+    /* Transparent backgrounds with blur for the glassmorphism effect */
+    --card-background-transparent: rgba(255, 255, 255, 0.4); /* 40% opaque white for cards */
+    --sidebar-background-transparent: rgba(255, 255, 255, 0.5); /* 50% opaque white for sidebar */
+    
+    --shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow for depth */
+    --border-radius-card: 15px;
+    --border-radius-button: 8px;
+
+    /* Status Colors (standard for clarity) */
+    --status-approved: #4CAF50; /* Green */
+    --status-pending: #FFC107; /* Amber (using primary yellow) */
+    --status-rejected: #F44336; /* Red */
 }
 
-/* Base styles for the body and overall layout */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--color-background-light); /* Light beige background */
     margin: 0;
     padding: 0;
+    background-color: #e6e6e6; /* A very light, neutral grey fallback if bg.jpg doesn't load */
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
     min-height: 100vh;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    /* Background image from the provided dashboard.jpg */
-    /* IMPORTANT: Ensure dashboard.jpg is in the SAME folder as this dashboard.css file */
-    background-image: url('css/dashboard.jpg');
-    background-size: cover; /* Cover the entire viewport */
-    background-position: center; /* Center the background image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-attachment: fixed; /* Keep background fixed when scrolling */
-    color: var(--color-text-medium); /* Default text color */
+    overflow-x: hidden;
 }
 
-/* Overlay for background image to add a subtle tint/darken effect for readability */
-.background-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(240, 242, 245, 0.7); /* Light gray overlay */
-    z-index: -1; /* Ensure it's behind content */
-}
-
-/* Main dashboard container */
 .dashboard-container {
     display: flex;
     width: 100%;
-    max-width: 1600px; /* Max width to match the image's expansive feel */
-    background-color: var(--color-surface-light); /* White for content area */
-    border-radius: 1.5rem; /* Rounded corners for the main container */
-    box-shadow: 0 10px 30px var(--color-shadow-medium); /* Soft shadow */
-    margin: 2rem; /* Margin around the container */
-    overflow: hidden; /* Ensures rounded corners are respected */
-    min-height: calc(100vh - 4rem); /* Adjust based on margin, ensures it takes up most of the screen */
+    min-height: 100vh;
+    background-image: url('../assets/background.jpg');
+    background-size: cover; /* Ensures the image covers the entire container */
+    background-repeat: no-repeat;
+    background-position: center center; /* Center the background image */
+    background-attachment: fixed; /* Keeps background fixed when scrolling */
+    padding: 20px; /* Padding around the whole dashboard to show background */
+    box-sizing: border-box; /* Include padding in width/height */
 }
 
-/* Sidebar Navigation */
+/* --- Sidebar Styling --- */
 .sidebar {
-    width: 280px; /* Fixed width for the sidebar */
-    background-color: var(--color-surface-light); /* White background */
-    padding: 2.5rem 1.5rem; /* Padding adjusted to match image */
+    width: 280px;
+    background-color: var(--sidebar-background-transparent); /* More opaque transparent background */
+    border-radius: var(--border-radius-card); /* Apply border-radius to the entire sidebar */
+    padding: 25px 20px;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--color-border-light); /* Separator from main content */
-    flex-shrink: 0; /* Prevent shrinking */
-    box-shadow: 2px 0 10px var(--color-shadow-light); /* Subtle shadow for depth */
+    /* ENHANCEMENT: Even stronger, more diffused shadow for a distinct float */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.6); /* **INCREASED SHADOW AND INNER GLOW** */
+    z-index: 10;
+    margin-right: 20px; /* Space between sidebar and main content */
+    backdrop-filter: blur(20px); /* **EVEN MORE BLUR** */
+    -webkit-backdrop-filter: blur(20px); /* For Safari */
+    border: 1px solid rgba(255, 255, 255, 0.6); /* **SLIGHTLY MORE VISIBLE BORDER** */
 }
 
-/* Changed sidebar logo color from blue to dark text */
-.sidebar-logo {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--color-text-dark); /* Changed to dark text color */
-    margin-bottom: 2.5rem;
-    text-align: center;
+.sidebar .logo {
+    font-size: 26px; /* Slightly larger logo */
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: 35px; /* More space below logo */
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.sidebar-search {
-    position: relative;
-    margin-bottom: 2rem;
+.sidebar .logo i {
+    color: var(--primary-yellow); /* Yellow for logo icon */
+    font-size: 28px; /* Slightly larger icon */
 }
 
-.sidebar-search input {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    border: 1px solid var(--color-border-light);
-    border-radius: 0.75rem;
+.sidebar .search-bar {
+    background-color: rgba(255, 255, 255, 0.1); /* Lighter transparent search bar */
+    border-radius: var(--border-radius-button);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4); /* More visible border */
+}
+
+.sidebar .search-bar i {
+    color: var(--medium-grey);
+}
+
+.sidebar .search-bar input {
+    border: none;
+    background: none;
     outline: none;
-    background-color: #F9FAFB; /* Light background for search input */
-    color: var(--color-text-medium);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    font-size: 15px;
+    color: var(--dark-grey);
+    padding: 0;
+}
+.sidebar .search-bar input::placeholder {
+    color: var(--medium-grey);
 }
 
-.sidebar-search input::placeholder {
-    color: var(--color-placeholder-text); /* Lighter placeholder text */
+.sidebar .nav-section-title {
+    font-size: 14px;
+    color: var(--medium-grey);
+    text-transform: uppercase;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding-left: 15px;
+    letter-spacing: 0.5px; /* Slight letter spacing for titles */
 }
 
-.sidebar-search input:focus {
-    border-color: var(--color-active-blue);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Blue focus ring */
-}
 
-.sidebar-search .fas {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-placeholder-text);
-}
-
-.sidebar-nav ul {
+.sidebar nav ul, .sidebar .quick-links ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.sidebar-nav li {
-    margin-bottom: 0.5rem;
+.sidebar nav li, .sidebar .quick-links li {
+    margin-bottom: 6px; /* Slightly reduced margin for tighter list */
 }
 
-/* Floating button style for sidebar navigation links */
-.sidebar-nav a {
+.sidebar nav a, .sidebar .quick-links a {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.85rem 1.25rem;
-    border-radius: 0.75rem;
-    color: var(--color-text-light);
+    gap: 15px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: var(--dark-grey);
     font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
-    background-color: var(--color-surface-light); /* Base background for floating button */
-    box-shadow: 0 2px 8px var(--color-shadow-light); /* Subtle shadow for floating effect */
+    border-radius: var(--border-radius-button);
+    transition: background-color 0.2s, color 0.2s, transform 0.2s; /* Added transform for hover */
 }
 
-/* Changed hover and active states to yellow */
-.sidebar-nav a:hover {
-    background-color: #FFFBEB; /* Very light yellow on hover */
-    color: var(--color-accent-yellow); /* Yellow text on hover */
-    box-shadow: 0 4px 12px var(--color-shadow-medium); /* More prominent shadow on hover */
+.sidebar nav a i, .sidebar .quick-links a i {
+    color: var(--medium-grey);
+    font-size: 18px;
 }
 
-.sidebar-nav a.active {
-    background-color: #FFFBEB; /* Active background - light yellow */
-    color: var(--color-accent-yellow); /* Active text color - primary yellow */
-    box-shadow: 0 4px 12px var(--color-shadow-medium); /* Active shadow */
-    font-weight: 600; /* Bolder for active */
+.sidebar nav li.active a {
+    background-color: var(--primary-yellow); /* Vibrant yellow for active state */
+    color: var(--dark-grey);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* ENHANCEMENT: Added a subtle offset or line for active state */
+    position: relative;
+    overflow: hidden; /* Ensure overflow is hidden for pseudo-element */
+}
+/* ENHANCEMENT: Small indicator line for active state */
+.sidebar nav li.active a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px; /* Width of the indicator line */
+    height: 80%; /* Height of the indicator line */
+    background-color: var(--dark-grey); /* Color of the indicator line */
+    border-radius: 0 5px 5px 0; /* Rounded right edge */
 }
 
-.nav-badge {
-    background-color: var(--color-accent-red); /* Red badge for notifications */
-    color: var(--color-surface-light);
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    border-radius: 9999px; /* Pill shape */
-    margin-left: auto; /* Push badge to the right */
+.sidebar nav li.active a i {
+    color: var(--dark-grey);
 }
 
-/* User Profile Summary at the bottom of the sidebar */
-.sidebar-user-profile {
+.sidebar nav a:hover:not(.active),
+.sidebar .quick-links a:hover {
+    background-color: rgba(255, 255, 255, 0.25); /* Slightly more opaque hover */
+    color: var(--dark-grey);
+    transform: translateX(5px); /* Slight movement on hover */
+}
+
+.quick-links {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+
+.user-profile {
+    margin-top: auto;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-top: auto; /* Pushes to the bottom of the sidebar */
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-border-light);
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    /* ENHANCEMENT: Slight background on hover for user profile */
+    transition: background-color 0.2s;
+    border-radius: var(--border-radius-button);
+    padding: 20px 10px 0 10px; /* Adjust padding for better look */
+    margin-left: -10px; /* Compensate for padding to keep alignment */
+    margin-right: -10px;
+}
+.user-profile:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.sidebar-user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 9999px;
+
+.user-profile .profile-pic {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--color-accent-yellow); /* Yellow border as in image */
+    border: 2px solid var(--primary-yellow); /* Yellow border for profile pic */
 }
 
-.sidebar-user-info .name {
+.user-profile .user-info {
+    flex-grow: 1;
+}
+
+.user-profile .user-name {
     font-weight: 600;
-    color: var(--color-text-dark);
+    color: var(--dark-grey);
+    font-size: 16px;
 }
 
-.sidebar-user-info .role {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
+.user-profile .user-role {
+    font-size: 13px;
+    color: var(--medium-grey);
 }
 
-.logout-icon-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 0.75rem;
-    background-color: #F3F4F6; /* Light gray background */
-    color: var(--color-text-medium);
-    font-size: 1.25rem;
-    text-decoration: none;
-    transition: background-color 0.2s, color 0.2s;
+.user-profile .notification-icon {
+    font-size: 20px;
+    color: var(--medium-grey);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.user-profile .notification-icon:hover {
+    color: var(--primary-yellow);
 }
 
-.logout-icon-button:hover {
-    background-color: var(--color-accent-red);
-    color: var(--color-surface-light);
-}
-
-/* Main Content Area */
+/* --- Main Content Styling --- */
 .main-content {
     flex-grow: 1;
-    padding: 2.5rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 2rem; /* Gap between major sections */
+    gap: 20px;
 }
 
+/* Header */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--color-border-light); /* Lighter border for header */
+    padding: 25px;
+    background-color: var(--card-background-transparent); /* Transparent header */
+    border-radius: var(--border-radius-card);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.header-greeting h1 {
-    font-size: 2.5rem; /* Larger font size for greeting */
-    font-weight: 900; /* Extra bold to match image */
-    color: var(--color-text-dark);
+.main-header .breadcrumbs {
+    color: var(--medium-grey);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.main-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--dark-grey);
     margin: 0;
 }
 
-.header-greeting p {
-    font-size: 1rem;
-    color: var(--color-text-light);
-    margin-top: 0.25rem;
+.main-header .date {
+    font-size: 15px;
+    color: var(--medium-grey);
+    margin-top: 5px;
 }
 
-.header-right-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.notification-icon-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 0.75rem;
-    background-color: #F3F4F6; /* Light gray background */
-    color: var(--color-text-medium);
-    font-size: 1.25rem;
-    text-decoration: none;
-    position: relative; /* For badge positioning */
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.notification-icon-button:hover {
-    background-color: #E5E7EB;
-}
-
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--color-accent-red);
-    color: var(--color-surface-light);
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.1rem 0.4rem;
-    border-radius: 9999px;
-    line-height: 1;
-}
-
-.user-profile-summary {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.user-info-text {
-    text-align: right;
-}
-
-.user-name {
+/* Request New Leave Button */
+.request-new-leave-button {
+    background-color: var(--primary-yellow); /* Main action button */
+    color: var(--dark-grey);
+    border: none;
+    padding: 12px 25px;
+    border-radius: var(--border-radius-button);
     font-weight: 600;
-    color: var(--color-text-dark);
-    font-size: 1rem;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    text-decoration: none; /* <-- ADD THIS LINE */
+}
+.request-new-leave-button:hover {
+    background-color: var(--accent-yellow-light); /* Slightly lighter on hover */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+.request-new-leave-button i {
+    font-size: 18px;
+}
+/* --- General Card Styling --- */
+.card {
+    background-color: var(--card-background-transparent); /* Transparent white */
+    border-radius: var(--border-radius-card);
+    padding: 25px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.user-role-header {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: var(--dark-grey);
 }
 
-.user-avatar-small {
-    width: 40px;
-    height: 40px;
-    border-radius: 9999px;
-    object-fit: cover;
-    border: 2px solid var(--color-accent-yellow); /* Yellow border as in image */
+.card-header .fas.fa-ellipsis-h {
+    color: var(--medium-grey);
+    cursor: pointer;
 }
 
-/* Dashboard Content Grid - Focused on Leave Management */
-.dashboard-content-grid {
+/* --- Row 1: Key Leave Metrics Grid --- */
+.metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
-    gap: 1.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
 }
 
-/* General styling for content sections (no "cards") */
-.key-stats-section,
-.leave-balance-breakdown-section,
-.recent-leave-applications-section,
-.upcoming-holidays-section,
-.team-upcoming-leaves-section {
-    background-color: var(--color-surface-light); /* White background for sections */
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 12px var(--color-shadow-light); /* Very subtle shadow for separation */
-}
-
-/* Key Leave Statistics Section */
-.key-stats-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.5rem;
-    grid-column: 1 / -1; /* Span full width on larger screens */
-}
-
-.stat-item {
+.metric-card {
+    background-color: var(--card-background-transparent); /* Transparent for consistency */
+    border-radius: var(--border-radius-card);
+    padding: 20px 25px;
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
-.stat-value {
-    font-size: 2rem;
+.metric-card .metric-icon {
+    font-size: 24px;
+    color: var(--primary-yellow); /* Yellow for icons */
+}
+
+.metric-card .metric-value {
+    font-size: 28px;
     font-weight: 700;
-    color: var(--color-text-dark);
-    margin-bottom: 0.25rem;
+    color: var(--dark-grey);
 }
 
-.stat-label {
-    font-size: 0.95rem;
-    color: var(--color-text-light);
+.metric-card .metric-label {
+    font-size: 15px;
+    color: var(--medium-grey);
+}
+
+/* --- Row 2: Middle Row Grid (Upcoming Leaves, Pending Requests, Right Stack) --- */
+.middle-row-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* My Upcoming Leaves Card */
+.upcoming-leaves-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.upcoming-leaves-card .card-header {
+    margin-bottom: 15px;
+}
+
+.upcoming-leaves-card .date-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--medium-grey);
     font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+}
+.upcoming-leaves-card .date-filter i {
+    color: var(--primary-yellow);
 }
 
-/* Leave Balance Breakdown Section */
-.section-header {
+.leave-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leave-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    padding: 12px 15px;
+    background-color: rgba(255, 255, 255, 0.2); /* Very light background for items */
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px); /* Subtle blur for items */
 }
 
-.section-header h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-text-dark);
-    margin: 0;
-}
-
-.view-all-link {
-    font-size: 0.9rem;
-    color: var(--color-active-blue);
-    text-decoration: none;
+.leave-item .leave-details {
     display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-weight: 500;
-    transition: color 0.2s;
+    flex-direction: column;
+    gap: 3px;
 }
 
-.view-all-link:hover {
-    color: #6366F1; /* Slightly darker blue on hover */
+.leave-item .item-title {
+    font-weight: 600;
+    color: var(--dark-grey);
+    font-size: 16px;
 }
 
-.balance-summary {
+.item-status {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
+}
+.approved-status {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--status-approved);
+}
+
+.leave-item .leave-options {
+    color: var(--medium-grey);
+    cursor: pointer;
+}
+
+/* Pending Leave Requests Card */
+.pending-requests-card {
     display: flex;
-    align-items: center;
-    gap: 2rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.total-balance {
+.request-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.request-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+.request-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.request-item .request-title {
+    font-weight: 600;
+    color: var(--dark-grey);
+    font-size: 16px;
+}
+
+.request-status.pending-status {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: var(--status-pending);
+    padding: 4px 8px;
+    border-radius: 5px;
+    align-self: flex-start;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.request-actions button {
+    border: 1px solid var(--primary-yellow); /* Yellow border */
+    background-color: transparent;
+    color: var(--dark-grey);
+    padding: 6px 12px;
+    border-radius: var(--border-radius-button);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.request-actions button.view-details-button:hover {
+    background-color: var(--primary-yellow);
+    color: var(--dark-grey);
+}
+.request-actions button.cancel-request-button {
+    color: var(--status-rejected);
+    border-color: var(--status-rejected);
+}
+.request-actions button.cancel-request-button:hover {
+    background-color: var(--status-rejected);
+    color: white;
+}
+
+.request-summary-chart {
     text-align: center;
-    flex-shrink: 0;
+    margin-top: auto;
+}
+.chart-placeholder {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
 }
 
-.total-value {
-    font-size: 3rem; /* Large value */
-    font-weight: 800;
-    color: var(--color-accent-yellow); /* Yellow for total days */
-    line-height: 1;
+
+/* Right Column Stack */
+.right-column-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.total-label {
-    font-size: 1rem;
-    color: var(--color-text-light);
+/* Detailed Leave Balances Card */
+.detailed-balances-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.balance-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+.balance-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.balance-item .balance-type {
+    font-weight: 600;
+    color: var(--dark-grey);
+    font-size: 15px;
+}
+
+.balance-numbers {
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+    color: var(--medium-grey);
+}
+.balance-numbers span {
+    white-space: nowrap;
+}
+.balance-numbers .remaining {
+    font-weight: 600;
+    color: var(--status-approved);
+}
+
+
+/* Recent Leave History Card */
+.recent-history-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+}
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item .history-details {
     font-weight: 500;
+    color: var(--dark-grey);
+    font-size: 15px;
 }
-
-.balance-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.balance-list li {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.95rem;
-    color: var(--color-text-medium);
-}
-
-.balance-list .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 9999px;
-    flex-shrink: 0;
-}
-.dot.annual { background-color: #4F46E5; } /* Blue */
-.dot.sick { background-color: #22C55E; } /* Green */
-.dot.casual { background-color: #F97316; } /* Orange */
-.dot.emergency { background-color: #EF4444; } /* Red */
-
-/* Recent Leave Applications Section */
-.application-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.application-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px dashed var(--color-border-light); /* Dashed separator */
-}
-
-.application-list li:last-child {
-    border-bottom: none; /* No border for the last item */
-    padding-bottom: 0;
-}
-
-.app-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.app-name {
+.history-item .history-status {
+    font-size: 12px;
     font-weight: 600;
-    color: var(--color-text-dark);
-    margin-bottom: 0.25rem;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--status-approved);
 }
 
-.app-date {
-    font-size: 0.85rem;
-    color: var(--color-text-light);
-}
-
-.app-status {
-    font-size: 0.85rem;
+.view-full-history-button {
+    background-color: var(--primary-yellow);
+    color: var(--dark-grey);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius-button);
     font-weight: 600;
-    padding: 0.3rem 0.7rem;
-    border-radius: 9999px;
-    text-transform: uppercase;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease-in-out;
 }
-.app-status.pending {
-    background-color: #FEF3C7; /* Light yellow for pending */
-    color: #D97706; /* Dark yellow text */
-}
-.app-status.approved {
-    background-color: #D1FAE5; /* Light green for approved */
-    color: var(--color-accent-green);
-}
-.app-status.rejected {
-    background-color: #FEE2E2; /* Light red for rejected */
-    color: var(--color-accent-red);
+.view-full-history-button:hover {
+    background-color: var(--accent-yellow-light);
 }
 
-/* Upcoming Company Holidays Section */
-.holiday-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+
+/* --- Row 3: Company Leave Policies/Announcements --- */
+.policies-announcements-card {
+    padding: 30px;
 }
 
-.holiday-list li {
+.policies-header {
+    margin-bottom: 25px;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px dashed var(--color-border-light);
 }
 
-.holiday-list li:last-child {
+.policies-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin: 0;
+    flex-grow: 1;
+}
+
+.search-policy {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius-button);
+    padding: 8px 15px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.search-policy input {
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 14px;
+    padding-right: 10px;
+    color: var(--dark-grey);
+}
+.search-policy input::placeholder {
+    color: var(--medium-grey);
+}
+
+.search-policy i {
+    color: var(--medium-grey);
+}
+
+.policy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.policy-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+.policy-item:last-child {
     border-bottom: none;
-    padding-bottom: 0;
 }
 
-.holiday-date {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-active-blue); /* Blue for dates */
-    flex-shrink: 0;
-    width: 70px; /* Fixed width for date alignment */
+.policy-item i {
+    font-size: 20px;
+    color: var(--primary-yellow); /* Icon color */
 }
 
-.holiday-name {
-    font-size: 0.95rem;
-    color: var(--color-text-medium);
+.policy-item a {
+    text-decoration: none;
+    color: var(--dark-grey);
+    font-weight: 500;
+    font-size: 16px;
+    flex-grow: 1;
+}
+.policy-item a:hover {
+    color: var(--primary-yellow);
 }
 
-/* Team's Upcoming Leaves Section */
-.team-leave-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.policy-item .policy-date {
+    font-size: 13px;
+    color: var(--medium-grey);
+    white-space: nowrap;
 }
 
-.team-leave-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px dashed var(--color-border-light);
-}
-
-.team-leave-list li:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.member-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.member-name {
+.policy-item .announcement-tag {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: var(--status-pending);
+    padding: 4px 8px;
+    border-radius: 5px;
     font-weight: 600;
-    color: var(--color-text-dark);
-    margin-bottom: 0.25rem;
 }
 
-.leave-info {
-    font-size: 0.85rem;
-    color: var(--color-text-light);
-}
-
-.leave-status {
-    font-size: 0.85rem;
-    font-weight: 600;
-    padding: 0.3rem 0.7rem;
-    border-radius: 9999px;
-    text-transform: uppercase;
-}
-/* Status colors are reused from app-status */
-.leave-status.pending {
-    background-color: #FEF3C7;
-    color: #D97706;
-}
-.leave-status.approved {
-    background-color: #D1FAE5;
-    color: var(--color-accent-green);
-}
-
-
-/* Responsive adjustments */
+/* --- Responsive adjustments (basic) --- */
 @media (max-width: 1200px) {
+    .middle-row-grid {
+        grid-template-columns: 1.5fr 1fr;
+    }
+    .right-column-stack {
+        grid-column: span 2;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .detailed-balances-card, .recent-history-card {
+        flex: 1 1 45%;
+        min-width: 280px;
+    }
+}
+
+@media (max-width: 992px) {
     .dashboard-container {
         flex-direction: column;
-        margin: 1rem;
+        padding: 15px;
     }
     .sidebar {
         width: 100%;
-        border-right: none;
-        border-bottom: 1px solid var(--color-border-light);
-        padding-bottom: 1rem;
+        padding: 20px;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
+        gap: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        margin-right: 0;
+        margin-bottom: 20px;
     }
-    .sidebar-logo, .sidebar-search {
+    .sidebar .logo, .sidebar .search-bar, .user-profile {
         margin-bottom: 0;
     }
-    .sidebar-nav {
+    .sidebar .main-nav, .sidebar .quick-links {
         width: 100%;
-        order: 3; /* Push nav below logo/search */
-    }
-    .sidebar-nav ul {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.75rem;
-    }
-    .sidebar-nav li {
-        margin-bottom: 0;
-    }
-    .sidebar-user-profile {
-        margin-top: 0;
-        padding-top: 0;
         border-top: none;
-        order: 2; /* Position next to search/logo */
+        padding-top: 0;
     }
+    .sidebar .main-nav h3, .sidebar .quick-links h3 {
+        padding-left: 0;
+    }
+    .sidebar nav ul, .sidebar .quick-links ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    .sidebar nav li, .sidebar .quick-links li {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+    .user-profile {
+        width: 100%;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
     .main-content {
-        padding: 1.5rem;
+        padding: 0;
     }
     .main-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 15px;
     }
-    .header-right-actions {
+    .request-new-leave-button {
         width: 100%;
-        justify-content: space-between;
-        margin-top: 1rem;
+        justify-content: center;
+    }
+    .metrics-grid, .middle-row-grid, .leave-balances-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    .right-column-stack {
+        flex-direction: column;
     }
 }
 
 @media (max-width: 768px) {
-    .dashboard-container {
-        margin: 0.5rem;
-        border-radius: 1rem;
+    .middle-row-grid {
+        grid-template-columns: 1fr;
     }
-    .main-content {
-        padding: 1rem;
-        gap: 1.5rem;
-    }
-    .header-greeting h1 {
-        font-size: 1.75rem;
-    }
-    .header-greeting p {
-        font-size: 0.9rem;
-    }
-    .sidebar-nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .key-stats-section {
-        grid-template-columns: 1fr; /* Single column for stats on small screens */
-    }
-    .balance-summary {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    .total-balance {
-        text-align: left;
-        width: 100%;
+    .right-column-stack {
+        grid-column: span 1;
     }
 }

@@ -92,8 +92,8 @@ body {
 }
 
 .btn-start {
-  background-color: #a6795b;
-  color: #fff;
+  background-color:  #f8cf46;
+  color: #1e1e1e;
   padding: 1rem 2.2rem;
   text-decoration: none;
   border-radius: 40px;
@@ -105,7 +105,7 @@ body {
 
 .btn-start:hover {
   transform: scale(1.05);
-  background-color: #8c6149;
+  background-color: #e5b935;
 }
 
 /* Feature Column (Right Panel) */
@@ -126,7 +126,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 1.5rem;
   /* --- UPDATED FOR SHRINKING --- */
   width: auto; /* Allow content to dictate width */
   max-width: 300px; /* Reduced from 380px to shrink */
@@ -139,14 +139,14 @@ body {
 /* Icons */
 .feature-item i {
   font-size: 3.5rem;
-  color: #a6795b;
+  color: #000000;
   margin-bottom: 0.5rem;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .feature-item:hover i {
   transform: translateY(-5px);
-  color: #8c6149;
+  color: #000000;
 }
 
 /* Titles */

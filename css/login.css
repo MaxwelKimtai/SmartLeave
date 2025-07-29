@@ -34,7 +34,7 @@ html, body {
     font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 
     /* Background Image Properties */
-    background-image: url('../assets/login.jpg'); /* <-- IMPORTANT: Update this path */
+    background-image: url('../assets/background.jpg'); /* <-- IMPORTANT: Update this path */
     background-size: cover; /* Ensures the image covers the entire viewport */
     background-position: center center; /* Centers the image */
     background-repeat: no-repeat; /* Prevents the image from tiling */

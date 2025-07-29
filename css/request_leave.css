@@ -1,0 +1,755 @@
+/* Color Variables - Based on dashboard.jpg and your request */
+:root {
+    --primary-yellow: #FFC107; /* Your dashboard yellow */
+    --accent-yellow-light: #FFD54F;
+    --dark-grey: #333333;
+    --medium-grey: #666666;
+    --light-grey: #EEEEEE;
+    --card-background-beige: rgba(245, 245, 220, 0.45); /* EVEN MORE transparency */
+    --card-border-beige: rgba(245, 245, 220, 0.6); /* Slightly more opaque for border */
+    --border-radius-card: 25px; /* More rounded corners like form.jpg */
+    --border-radius-button: 30px;
+    --input-border-radius: 10px; /* Softer corners for inputs */
+    --shadow-subtle: 0 5px 15px rgba(0, 0, 0, 0.08); /* Lighter shadow for a modern look */
+    --shadow-medium: 0 15px 30px rgba(0, 0, 0, 0.15); /* For overall container */
+    --input-placeholder-color: #A0A0A0; /* Lighter placeholder color */
+}
+
+/* General Resets & Body Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-grey);
+    background-image: url('../assets/background.jpg'); /* Your background image */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-color: #e6e6e6; /* Fallback */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* CRITICAL: Prevents body scrolling, manage overflow within container */
+    position: relative;
+    padding: 20px; /* Padding around the whole container */
+}
+
+/* Background Overlay for depth */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)); /* Very subtle */
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Main Container for the Stepped Form (Mimicking form.jpg layout) */
+.stepped-form-container {
+    display: flex;
+    background-color: var(--card-background-beige); /* Beige with more transparency */
+    border-radius: var(--border-radius-card);
+    box-shadow: var(--shadow-medium);
+    backdrop-filter: blur(45px); /* Increased blur for MORE translucency/glass effect */
+    -webkit-backdrop-filter: blur(45px);
+    border: 1px solid var(--card-border-beige); /* Slightly more opaque border */
+    max-width: 950px; /* Reduced max-width */
+    width: 90%; /* Reduced default width */
+    height: calc(100vh - 40px); /* Slightly increased height to avoid internal scrolling for form content */
+    min-height: 500px; /* Reduced minimum height */
+    overflow: hidden; /* Ensures content stays within rounded corners */
+    z-index: 1;
+}
+
+/* Left Panel - Illustration/Description Side */
+.left-panel {
+    flex: 0.7; /* Adjust flex to match smaller container */
+    padding: 30px; /* Slightly reduced padding */
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4)); /* Slightly more transparent */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes logo to top, illustration to middle, text below */
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.left-panel .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Slightly smaller gap */
+    margin-bottom: 15px; /* Slightly reduced margin */
+    color: var(--dark-grey);
+    font-weight: 700;
+    font-size: 20px; /* Slightly smaller logo text */
+}
+
+.left-panel .logo img {
+    height: 40px; /* Adjust logo size */
+    filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1));
+}
+
+.left-panel .illustration-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 0; /* Slightly reduced padding */
+}
+
+.left-panel .illustration-area h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; /* Slightly smaller, more proportional */
+    color: var(--dark-grey);
+    margin-bottom: 10px; /* Slightly reduced margin */
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.left-panel .illustration-area p {
+    font-size: 15px; /* Slightly smaller font */
+    color: var(--medium-grey);
+    margin-bottom: 20px; /* Slightly reduced margin */
+    max-width: 280px; /* Adjust max-width */
+    line-height: 1.4; /* Adjust line-height */
+}
+
+.left-panel .illustration {
+    max-width: 85%; /* Adjust illustration size */
+    height: auto;
+    filter: drop-shadow(6px 6px 12px rgba(0,0,0,0.12)); /* Slightly less pronounced shadow */
+}
+
+/* Right Panel - Form Content Side */
+.right-panel {
+    flex: 1.3; /* Adjust flex to match smaller container */
+    padding: 30px; /* Slightly reduced padding */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* Removed explicit height here; let flexbox manage it within the container */
+}
+
+/* Wrapper for scrollable content within right panel - NO SCROLLING HERE AS REQUESTED */
+.form-content-wrapper {
+    flex-grow: 1; /* Allows it to take available height */
+    /* Removed overflow-y: auto; to prevent internal scrolling */
+    padding-right: 0; /* No need for scrollbar padding if no scroll */
+    /* Remove scrollbar styles if no scroll */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Custom Scrollbar for Webkit browsers - (Not needed if no scroll, but good to keep if overflow is re-introduced) */
+.form-content-wrapper::-webkit-scrollbar {
+    width: 0; /* Hide scrollbar for Webkit */
+    height: 0;
+}
+.form-content-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+.form-content-wrapper::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+
+/* Progress Bar Styling (Aligned with form.jpg general aesthetic) */
+.progress-bar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px; /* Slightly reduced margin */
+    position: relative;
+    padding: 0 8px; /* Adjust padding */
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+    color: var(--medium-grey);
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.progress-step .step-circle {
+    width: 34px; /* Slightly smaller circles */
+    height: 34px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.03); /* Lighter, more subtle inactive circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500; /* Slightly lighter font-weight */
+    margin-bottom: 6px; /* Slightly reduced margin */
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.08); /* More subtle border */
+}
+
+.progress-step .step-text {
+    font-size: 14px; /* Slightly smaller font */
+    font-weight: 400; /* Slightly lighter font-weight */
+}
+
+.progress-step.current .step-circle {
+    background-color: var(--primary-yellow);
+    color: var(--dark-grey);
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3); /* More subtle glow */
+}
+
+.progress-step.current .step-text {
+    color: var(--dark-grey);
+    font-weight: 600;
+}
+
+.progress-step.completed .step-circle {
+    background-color: #4CAF50; /* Green for completed steps */
+    color: white;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3); /* More subtle glow */
+}
+.progress-step.completed .step-text {
+    color: #4CAF50;
+    font-weight: 500; /* Slightly lighter font-weight */
+}
+
+.progress-line {
+    position: absolute;
+    height: 2px; /* Thinner line */
+    background-color: rgba(0,0,0,0.08); /* More subtle line color */
+    width: calc(100% - 70px); /* Adjust width */
+    left: 35px; /* Adjust left position */
+    top: 17px; /* Align with middle of new circle size */
+    z-index: 1;
+}
+
+/* Form Steps */
+.form-step {
+    display: none;
+    flex-direction: column;
+    flex-grow: 1; /* Ensures the active step fills the available height */
+    /* No overflow here, allowing content to push the container height if necessary,
+       but the stepped-form-container already has fixed height */
+}
+
+.form-step.current {
+    display: flex;
+}
+
+.form-step h3 {
+    font-size: 22px; /* Further adjusted */
+    color: var(--dark-grey);
+    margin-bottom: 25px; /* Slightly reduced margin */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Slightly smaller gap */
+    font-weight: 500; /* Slightly lighter font-weight */
+}
+
+.form-step h3 i {
+    color: var(--primary-yellow);
+    font-size: 26px; /* Slightly smaller icon */
+}
+
+/* Form Group & Floating Label */
+.form-group {
+    position: relative;
+    margin-bottom: 25px; /* Slightly reduced spacing */
+    padding: 0;
+}
+
+.form-group label {
+    position: absolute;
+    left: 0px;
+    top: 13px; /* Adjust based on input padding */
+    color: var(--medium-grey);
+    font-size: 15px; /* Slightly smaller font */
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    padding: 0 0px;
+    z-index: 1; /* Below input display, above actual select */
+    transform-origin: left;
+    white-space: nowrap; /* Prevent label from wrapping too early */
+    line-height: 1; /* Ensure label doesn't take up too much vertical space */
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 0px 12px 0px; /* Adjust padding, no left/right to start text at 0 */
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.15); /* More subtle bottom border */
+    background-color: transparent;
+    color: var(--dark-grey);
+    font-size: 16px; /* Slightly smaller font */
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    line-height: 1.2; /* Ensure consistent line height for text */
+    z-index: 2; /* Ensure input content is above label when not floated */
+}
+
+/* Specific styling for select to make it look like form.jpg */
+.form-group select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 12px 0px 12px 0px; /* Match display input padding */
+    border: none;
+    background-color: transparent;
+    color: transparent; /* Hide actual text in select */
+    font-size: 16px;
+    box-sizing: border-box;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    z-index: 2; /* Below display input */
+}
+
+/* This input acts as the visual display for the select */
+.form-group #leave_type_display {
+    position: relative; /* Make it relative to be styled normally */
+    width: 100%;
+    padding: 12px 35px 12px 0px; /* Padding for text, space for icon */
+    color: var(--dark-grey);
+    cursor: pointer;
+    z-index: 3; /* Above actual select */
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+}
+
+.form-group select:focus { /* When actual select is focused */
+    border-color: var(--primary-yellow);
+    box-shadow: 0 1px 0 0 var(--primary-yellow); /* More subtle shadow */
+}
+
+/* Placeholder styling - for actual inputs, not the select display */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--input-placeholder-color);
+    opacity: 1;
+}
+
+/* Floating Label states */
+.form-group.floating-label.has-content label,
+.form-group.floating-label.is-focused label {
+    top: -15px; /* Adjust lift */
+    left: -3px; /* Adjust position */
+    font-size: 12px; /* Further smaller font */
+    color: var(--primary-yellow);
+    background-color: var(--card-background-beige); /* Use card background for floating label */
+    padding: 2px 4px; /* Adjust padding */
+    border-radius: 3px; /* Adjust radius */
+    transform: translateY(0) scale(0.85); /* Further slight scale down */
+    z-index: 4; /* Ensure label is above everything when floated */
+}
+
+/* Input Icons */
+.input-icon {
+    position: absolute;
+    right: 0px;
+    top: 13px; /* Adjust top to align with input text */
+    color: var(--medium-grey);
+    font-size: 16px; /* Slightly smaller icon */
+    pointer-events: none;
+    z-index: 5; /* Highest z-index for icons to be on top of input content */
+    transition: color 0.2s ease;
+}
+
+.textarea-icon {
+    top: 13px; /* Align with textarea top */
+    transform: translateY(0);
+}
+
+/* Focus state for inputs */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group #leave_type_display:focus { /* Also apply focus to the display input for custom select */
+    border-color: var(--primary-yellow);
+    box-shadow: 0 1px 0 0 var(--primary-yellow); /* More subtle shadow */
+}
+/* Ensure the icon changes color on focus */
+.form-group input:focus + .input-icon,
+.form-group textarea:focus + .input-icon,
+.form-group #leave_type_display:focus + .input-icon {
+    color: var(--primary-yellow);
+}
+
+/* Date input specific styling for consistent look and to fix overlap */
+.form-group input[type="date"] {
+    position: relative; /* Essential for z-index to work against other elements */
+    z-index: 3; /* Ensure date input value is above label and below calendar picker indicator */
+    background-color: transparent; /* Keep background transparent */
+    color: var(--dark-grey); /* Ensure text color is visible */
+    padding-right: 35px; /* Ensure space for the calendar icon/picker */
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent; /* Hide the default background */
+    color: transparent; /* Hide any default icon/text */
+    cursor: pointer;
+    opacity: 0; /* Make it fully invisible, but clickable */
+    position: absolute;
+    left: 0; /* Cover the whole input field */
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6; /* Ensure it's clickable and above our icon and input text */
+}
+
+/* Validation styling */
+.form-group input.is-invalid,
+.form-group select.is-invalid,
+.form-group textarea.is-invalid,
+.form-group #leave_type_display.is-invalid { /* Apply invalid style to display input */
+    border-color: #F44336; /* Red border for invalid fields */
+    box-shadow: 0 1px 0 0 #F44336; /* Red line shadow */
+}
+
+/* File Upload Group */
+.file-upload-group {
+    margin-top: 20px; /* Adjusted margin */
+    margin-bottom: 25px; /* Adjusted margin */
+}
+
+.file-upload-group label {
+    margin-bottom: 10px; /* Adjusted margin */
+    font-weight: 500; /* Adjusted font-weight */
+    color: var(--dark-grey);
+    font-size: 15px; /* Adjusted font-size */
+    display: block;
+}
+
+.file-upload-group input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjusted gap */
+    padding: 10px 20px; /* Adjusted padding */
+    border: 1px dashed var(--primary-yellow); /* Thinner dashed border */
+    border-radius: var(--input-border-radius);
+    background-color: rgba(255, 193, 7, 0.08); /* More subtle background */
+    color: var(--dark-grey);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: rgba(255, 193, 7, 0.15); /* More subtle hover */
+    border-color: var(--primary-yellow);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* More subtle shadow */
+}
+
+.custom-file-upload i {
+    color: var(--primary-yellow);
+    font-size: 18px; /* Slightly smaller icon */
+}
+
+#file-name {
+    flex-grow: 1;
+    text-align: right;
+    color: var(--medium-grey);
+    font-size: 14px; /* Slightly smaller font */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Form Actions Buttons */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px; /* Adjusted gap */
+    margin-top: auto; /* Pushes buttons to the bottom */
+    padding-top: 20px; /* Adjusted padding */
+    border-top: 1px solid rgba(0,0,0,0.05); /* Lighter separator line */
+}
+
+.form-actions button {
+    padding: 12px 25px; /* Adjusted padding */
+    border-radius: 25px; /* Slightly smaller radius */
+    font-weight: 600;
+    font-size: 16px; /* Slightly smaller font */
+    cursor: pointer;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* More subtle shadow */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adjusted gap */
+}
+
+.form-actions .primary-button {
+    background-color: var(--primary-yellow);
+    color: var(--dark-grey);
+}
+
+.form-actions .primary-button:hover {
+    background-color: var(--primary-yellow);
+    color: var(--dark-grey);
+    box-shadow: 0 0 3px var(--primary-yellow),
+                0 0 10px var(--primary-yellow),
+                0 0 20px var(--primary-yellow),
+                0 0 40px rgba(255, 193, 7, 0.4); /* Reduced glow intensity */
+    transform: translateY(-2px); /* Slightly less pronounced lift */
+    text-shadow: 0 0 3px rgba(0,0,0,0.15);
+}
+
+.form-actions .secondary-button {
+    background-color: var(--light-grey);
+    color: var(--dark-grey);
+    border: 1px solid var(--medium-grey);
+}
+
+.form-actions .secondary-button:hover {
+    background-color: var(--medium-grey);
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* More subtle shadow */
+    transform: translateY(-1px);
+}
+
+/* Confirmation Summary Styling */
+.confirmation-summary {
+    background-color: rgba(255, 255, 255, 0.3); /* More transparent */
+    border-radius: 10px; /* Slightly smaller radius */
+    padding: 20px; /* Adjusted padding */
+    margin-bottom: 25px; /* Adjusted margin */
+    border: 1px solid rgba(255, 255, 255, 0.6); /* More transparent border */
+    box-shadow: var(--shadow-subtle);
+}
+
+.confirmation-summary p {
+    margin-bottom: 10px; /* Adjusted margin */
+    font-size: 15px; /* Slightly smaller font */
+    color: var(--dark-grey);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px; /* Adjusted gap */
+    line-height: 1.4;
+}
+
+.confirmation-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.confirmation-summary strong {
+    color: var(--primary-yellow);
+    min-width: 120px; /* Ensure alignment of values */
+    font-weight: 500; /* Slightly lighter font */
+}
+
+
+/* Toast Notification Styles (re-used) */
+#toast-container {
+    position: fixed;
+    bottom: 20px; /* Adjusted position */
+    right: 20px; /* Adjusted position */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Adjusted gap */
+}
+
+.toast {
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly more opaque for toast */
+    color: var(--dark-grey);
+    padding: 12px 20px; /* Adjusted padding */
+    border-radius: 8px; /* Adjusted radius */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Adjusted shadow */
+    backdrop-filter: blur(8px); /* Adjusted blur */
+    border: 1px solid rgba(255, 255, 255, 0.7); /* Adjusted border */
+    opacity: 0;
+    transform: translateY(15px); /* Adjusted transform */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    max-width: 280px; /* Adjusted toast width */
+    word-wrap: break-word;
+    font-size: 14px; /* Adjusted font size */
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.hide {
+    opacity: 0;
+    transform: translateY(15px);
+}
+
+.toast.success {
+    border-left: 4px solid #4CAF50; /* Thinner border */
+}
+
+.toast.error {
+    border-left: 4px solid #F44336; /* Thinner border */
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .stepped-form-container {
+        flex-direction: column; /* Stack panels on smaller screens */
+        max-width: 600px; /* Wider for stacked layout */
+        height: auto; /* Allow height to adjust based on content */
+        min-height: auto;
+        padding: 0; /* Remove padding from container to let panels handle it */
+    }
+
+    .left-panel {
+        padding: 25px; /* Adjusted padding */
+        min-height: 200px; /* Adjusted min-height */
+        flex: none; /* Remove flex property for stacking */
+    }
+    .left-panel .illustration-area h3 {
+        font-size: 28px; /* Adjusted font size */
+    }
+    .left-panel .illustration-area p {
+        font-size: 14px; /* Adjusted font size */
+        margin-bottom: 15px;
+    }
+    .left-panel .illustration {
+        max-width: 80%; /* Adjusted illustration size */
+    }
+
+    .right-panel {
+        padding: 25px; /* Adjusted padding */
+        flex: none; /* Remove flex property for stacking */
+    }
+    .progress-bar-container {
+        margin-bottom: 25px; /* Adjusted margin */
+    }
+    .form-step h3 {
+        font-size: 20px; /* Adjusted font size */
+        margin-bottom: 20px;
+    }
+    .form-content-wrapper {
+        padding-right: 0; /* No scrollbar padding in column layout */
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 5px; /* Reduced overall padding */
+    }
+    .stepped-form-container {
+        border-radius: 15px;
+    }
+    .left-panel, .right-panel {
+        padding: 15px; /* Further reduced padding */
+    }
+    .left-panel {
+        min-height: 150px;
+    }
+    .left-panel .logo {
+        font-size: 16px;
+        gap: 6px;
+    }
+    .left-panel .logo img {
+        height: 30px;
+    }
+    .left-panel .illustration-area h3 {
+        font-size: 22px;
+        margin-bottom: 5px;
+    }
+    .left-panel .illustration-area p {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+    .right-panel {
+        padding: 20px; /* Adjusted padding */
+    }
+    .progress-bar-container {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .progress-step {
+        flex: none;
+        width: 33%;
+        margin-bottom: 8px; /* Adjusted margin */
+    }
+    .progress-line {
+        display: none;
+    }
+    .form-group {
+        margin-bottom: 18px; /* Adjusted margin */
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea,
+    .form-group #leave_type_display {
+        padding: 10px 0px 10px 0px; /* Further adjusted padding */
+        font-size: 14px;
+    }
+    .form-group label {
+        font-size: 13px;
+        top: 10px; /* Adjusted top */
+    }
+    .form-group.floating-label.has-content label,
+    .form-group.floating-label.is-focused label {
+        top: -12px; /* Adjusted top */
+        left: -3px;
+        font-size: 10px;
+        padding: 1px 3px;
+    }
+    .input-icon {
+        right: 0px;
+        font-size: 14px;
+        top: 10px; /* Adjusted top */
+    }
+    .custom-file-upload {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+    .custom-file-upload i {
+        font-size: 14px;
+    }
+    .form-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .form-actions button {
+        width: 100%;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    .confirmation-summary {
+        padding: 12px;
+        font-size: 14px;
+    }
+    .confirmation-summary p {
+        font-size: 14px;
+    }
+    .confirmation-summary strong {
+        min-width: 90px;
+    }
+}

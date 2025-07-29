@@ -1,209 +1,244 @@
-<?php
-// dashboard.php - This file contains the HTML structure and dynamic content for the simplified Employee Leave Dashboard.
-// In a real application, user data and leave data would be fetched from a database or API.
-
-// Simulating a logged-in user for demonstration purposes.
-$loggedInUserName = "Max";
-$userRole = "Employee"; // Or "Manager" depending on the user
-$userAvatarInitials = implode('', array_map(function($n) { return $n[0]; }, explode(' ', $loggedInUserName)));
-$userAvatarInitials = strtoupper($userAvatarInitials);
-
-// Simulate dynamic date
-$currentDate = date("l, d F Y"); // e.g., "Wednesday, 11 November 2024"
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Leave Dashboard</title>
-    <!-- Inter font from Google Fonts for a modern look -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Tailwind CSS CDN for basic utility classes (most styling is in dashboard.css) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Link to your custom dashboard.css for styling -->
+    <title>Leave Dashboard</title>
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Background overlay to subtly tint the background image for better readability -->
-    <div class="background-overlay"></div>
-
     <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
-            <div class="sidebar-logo">SMART LEAVE</div>
-            <div class="sidebar-search">
-                <input type="text" placeholder="Search leave requests...">
-                <i class="fas fa-search"></i>
+            <div class="logo">
+                <i class="fas fa-home"></i> SMART LEAVE
             </div>
-            <nav class="sidebar-nav">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search policies, colleagues...">
+            </div>
+            <nav class="main-nav">
+                <h3 class="nav-section-title">Main Navigation</h3>
                 <ul>
-                    <li><a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                    <li><a href="#"><i class="fas fa-calendar-plus"></i> Apply Leave</a></li>
-                    <li><a href="#"><i class="fas fa-history"></i> Leave History</a></li>
-                    <li><a href="#"><i class="fas fa-calendar-alt"></i> Team Leave Calendar</a></li>
-                    <!-- Optional: For Managers/Admins -->
-                    <!-- <li><a href="#"><i class="fas fa-check-circle"></i> Leave Approvals</a></li> -->
-                    <li><a href="#"><i class="fas fa-bell"></i> Notifications <span class="nav-badge">3</span></a></li>
+                    <li class="active"><a href="#"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-calendar-plus"></i> Request Leave</a></li>
+                    <li><a href="#"><i class="fas fa-history"></i> My Leave History</a></li>
+                    <li><a href="#"><i class="fas fa-book"></i> Leave Policies</a></li>
+                    <li><a href="#"><i class="fas fa-users-viewfinder"></i> Team Calendar</a></li>
+                    <li><a href="#"><i class="fas fa-user-circle"></i> My Profile</a></li>
                 </ul>
             </nav>
 
-            <!-- User Profile Summary at the bottom of the sidebar -->
-            <div class="sidebar-user-profile">
-                <img src="https://via.placeholder.com/48x48?text=<?php echo $userAvatarInitials; ?>" alt="User Avatar" class="sidebar-user-avatar">
-                <div class="sidebar-user-info">
-                    <p class="name"><?php echo $loggedInUserName; ?></p>
-                    <p class="role"><?php echo $userRole; ?></p>
+            <div class="nav-section quick-links">
+                <h3 class="nav-section-title">Quick Links</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i> Holiday Calendar</a></li>
+                    <li><a href="#"><i class="fas fa-headset"></i> Contact HR</a></li>
+                </ul>
+            </div>
+
+            <div class="user-profile">
+                <img src="/assets/profile.png"  class="profile-pic">
+                <div class="user-info">
+                    <div class="user-name">Maxwel</div>
+                    <div class="user-role">Employee</div>
                 </div>
-                <a href="#" class="logout-icon-button ml-auto" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+                <i class="fas fa-bell notification-icon"></i>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="main-header">
-                <div class="header-greeting">
-                    <h1>Welcome, <?php echo $loggedInUserName; ?></h1>
-                    <p>Today is <?php echo $currentDate; ?></p>
+     <main class="main-content">
+    <header class="main-header">
+        <div class="header-left">
+            <span class="breadcrumbs">Home / My Leave Dashboard</span>
+            <h1>Good Morning</h1>
+            <p class="date">It's Tuesday, July 29 2025</p>
+        </div>
+        <a href="request_leave.php" class="request-new-leave-button">
+            <i class="fas fa-plus"></i> Request New Leave
+        </a>
+        </header>
+
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <i class="fas fa-calendar-alt metric-icon"></i>
+                    <span class="metric-value">12 Days</span>
+                    <span class="metric-label">Annual Leave Balance</span>
                 </div>
-                <div class="header-right-actions">
-                    <a href="#" class="notification-icon-button" title="Notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </a>
-                    <div class="user-profile-summary">
-                        <div class="user-info-text">
-                            <p class="user-name"><?php echo $loggedInUserName; ?></p>
-                            <p class="user-role-header"><?php echo $userRole; ?></p>
+                <div class="metric-card">
+                    <i class="fas fa-hospital-user metric-icon"></i>
+                    <span class="metric-value">5 Days</span>
+                    <span class="metric-label">Sick Leave Balance</span>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-briefcase metric-icon"></i>
+                    <span class="metric-value">3 Days</span>
+                    <span class="metric-label">Casual Leave Balance</span>
+                </div>
+                <div class="metric-card">
+                    <i class="fas fa-sign-out-alt metric-icon"></i>
+                    <span class="metric-value">7 Days</span>
+                    <span class="metric-label">Leaves Taken This Year</span>
+                </div>
+            </section>
+
+            <section class="middle-row-grid">
+                <div class="card upcoming-leaves-card">
+                    <div class="card-header">
+                        <span>My Upcoming Leaves</span>
+                        <span class="date-filter"><i class="far fa-calendar-alt"></i> This Month <i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="leave-list">
+                        <div class="leave-item">
+                            <div class="leave-details">
+                                <span class="item-title">Annual Leave: Nov 20 - Nov 25, 2024</span>
+                                <span class="item-status approved-status">Approved</span>
+                            </div>
+                            <i class="fas fa-ellipsis-h leave-options"></i>
                         </div>
-                        <img src="https://via.placeholder.com/40x40?text=<?php echo $userAvatarInitials; ?>" alt="User Avatar" class="user-avatar-small" id="userAvatar">
-                    </div>
-                    <a href="#" class="logout-icon-button" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
-                </div>
-            </header>
-
-            <!-- Dashboard Content Grid - Focused on Leave Management -->
-            <section class="dashboard-content-grid">
-
-                <!-- Key Leave Statistics Section -->
-                <div class="key-stats-section">
-                    <div class="stat-item">
-                        <p class="stat-value">15 Days</p>
-                        <p class="stat-label">Remaining Leave</p>
-                    </div>
-                    <div class="stat-item">
-                        <p class="stat-value">3</p>
-                        <p class="stat-label">Pending Requests</p>
-                    </div>
-                    <div class="stat-item">
-                        <p class="stat-value">5 Days</p>
-                        <p class="stat-label">Approved This Month</p>
-                    </div>
-                    <div class="stat-item">
-                        <p class="stat-value">Aug 15-18</p>
-                        <p class="stat-label">Your Next Leave</p>
-                    </div>
-                </div>
-
-                <!-- Leave Balance Breakdown Section -->
-                <div class="leave-balance-breakdown-section">
-                    <div class="section-header">
-                        <h3>Your Leave Balance</h3>
-                        <a href="#" class="view-all-link">View Full History <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                    <div class="balance-summary">
-                        <div class="total-balance">
-                            <p class="total-value">20</p>
-                            <p class="total-label">Total Days</p>
+                        <div class="leave-item">
+                            <div class="leave-details">
+                                <span class="item-title">Sick Leave: Dec 1 - Dec 1, 2024</span>
+                                <span class="item-status approved-status">Approved</span>
+                            </div>
+                            <i class="fas fa-ellipsis-h leave-options"></i>
                         </div>
-                        <ul class="balance-list">
-                            <li><span class="dot annual"></span> Annual: 10 Days</li>
-                            <li><span class="dot sick"></span> Sick: 5 Days</li>
-                            <li><span class="dot casual"></span> Casual: 3 Days</li>
-                            <li><span class="dot emergency"></span> Emergency: 2 Days</li>
-                        </ul>
+                        <div class="leave-item">
+                            <div class="leave-details">
+                                <span class="item-title">Casual Leave: Jan 5 - Jan 5, 2025</span>
+                                <span class="item-status approved-status">Approved</span>
+                            </div>
+                            <i class="fas fa-ellipsis-h leave-options"></i>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Recent Leave Applications Section -->
-                <div class="recent-leave-applications-section">
-                    <div class="section-header">
-                        <h3>Your Recent Applications</h3>
-                        <a href="#" class="view-all-link">See All <i class="fas fa-chevron-right"></i></a>
+                <div class="card pending-requests-card">
+                    <div class="card-header">
+                        <span>Pending Leave Requests</span>
+                        <i class="fas fa-ellipsis-h"></i>
                     </div>
-                    <ul class="application-list">
-                        <li>
-                            <div class="app-details">
-                                <p class="app-name">Annual Leave (5 days)</p>
-                                <span class="app-date">Submitted on Jul 25, 2025</span>
+                    <div class="request-list">
+                        <div class="request-item">
+                            <span class="request-title">Annual Leave: Jan 5 - Jan 10, 2025</span>
+                            <span class="request-status pending-status">Pending Approval</span>
+                            <div class="request-actions">
+                                <button class="view-details-button">View Details</button>
+                                <button class="cancel-request-button">Cancel Request</button>
                             </div>
-                            <span class="app-status pending">Pending</span>
-                        </li>
-                        <li>
-                            <div class="app-details">
-                                <p class="app-name">Sick Leave (1 day)</p>
-                                <span class="app-date">Submitted on Jul 20, 2025</span>
-                            </div>
-                            <span class="app-status approved">Approved</span>
-                        </li>
-                        <li>
-                            <div class="app-details">
-                                <p class="app-name">Casual Leave (2 days)</p>
-                                <span class="app-date">Submitted on Jul 18, 2025</span>
-                            </div>
-                            <span class="app-status approved">Approved</span>
-                        </li>
-                        <li>
-                            <div class="app-details">
-                                <p class="app-name">Emergency Leave (1 day)</p>
-                                <span class="app-date">Submitted on Jul 10, 2025</span>
-                            </div>
-                            <span class="app-status rejected">Rejected</span>
-                        </li>
-                    </ul>
+                        </div>
+                        <div class="request-item no-pending-requests" style="display: none;">
+                            <p>No pending leave requests at the moment.</p>
+                        </div>
+                    </div>
+                    <div class="request-summary-chart">
+                        <img src="https://via.placeholder.com/200x100/f0f0f0/888888?text=Leave+Status+Chart" alt="Leave Status Chart" class="chart-placeholder">
+                    </div>
                 </div>
 
-                <!-- Upcoming Company Holidays Section -->
-                <div class="upcoming-holidays-section">
-                    <div class="section-header">
-                        <h3>Upcoming Holidays</h3>
-                        <a href="#" class="view-all-link">Full Calendar <i class="fas fa-chevron-right"></i></a>
+                <div class="right-column-stack">
+                    <div class="card detailed-balances-card">
+                        <div class="card-header">
+                            <span>Detailed Leave Balances</span>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <div class="balance-item">
+                            <span class="balance-type">Annual Leave</span>
+                            <div class="balance-numbers">
+                                <span class="entitlement">Entitlement: 15</span>
+                                <span class="taken">Taken: 3</span>
+                                <span class="remaining">Remaining: 12</span>
+                            </div>
+                        </div>
+                        <div class="balance-item">
+                            <span class="balance-type">Sick Leave</span>
+                            <div class="balance-numbers">
+                                <span class="entitlement">Entitlement: 10</span>
+                                <span class="taken">Taken: 5</span>
+                                <span class="remaining">Remaining: 5</span>
+                            </div>
+                        </div>
+                        <div class="balance-item">
+                            <span class="balance-type">Casual Leave</span>
+                            <div class="balance-numbers">
+                                <span class="entitlement">Entitlement: 5</span>
+                                <span class="taken">Taken: 2</span>
+                                <span class="remaining">Remaining: 3</span>
+                            </div>
+                        </div>
+                         <div class="balance-item">
+                            <span class="balance-type">Maternity Leave</span>
+                            <div class="balance-numbers">
+                                <span class="entitlement">Entitlement: 90</span>
+                                <span class="taken">Taken: 0</span>
+                                <span class="remaining">Remaining: 90</span>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="holiday-list">
-                        <li>
-                            <div class="holiday-date">Aug 15</div>
-                            <div class="holiday-name">National Heroes' Day</div>
-                        </li>
-                        <li>
-                            <div class="holiday-date">Sep 01</div>
-                            <div class="holiday-name">Labor Day</div>
-                        </li>
-                        <li>
-                            <div class="holiday-date">Oct 20</div>
-                            <div class="holiday-name">Mashujaa Day</div>
-                        </li>
-                    </ul>
+
+                    <div class="card recent-history-card">
+                        <div class="card-header">
+                            <span>My Recent Leave History</span>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <div class="history-list">
+                            <div class="history-item">
+                                <span class="history-details">Annual Leave: Oct 10 - Oct 12, 2024</span>
+                                <span class="history-status approved-status">Approved</span>
+                            </div>
+                            <div class="history-item">
+                                <span class="history-details">Sick Leave: Sep 5, 2024</span>
+                                <span class="history-status approved-status">Approved</span>
+                            </div>
+                            <div class="history-item">
+                                <span class="history-details">Casual Leave: Aug 1, 2024</span>
+                                <span class="history-status approved-status">Approved</span>
+                            </div>
+                            <div class="history-item">
+                                <span class="history-details">Annual Leave: May 15 - May 17, 2024</span>
+                                <span class="history-status approved-status">Approved</span>
+                            </div>
+                        </div>
+                        <button class="view-full-history-button">View Full History</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card policies-announcements-card">
+                <div class="card-header policies-header">
+                    <h2>Company Leave Policies & Announcements</h2>
+                    <div class="search-policy">
+                        <input type="text" placeholder="Search policies...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="policy-list">
+                    <div class="policy-item">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="#">Annual Leave Policy Guidelines 2024</a>
+                        <span class="policy-date">Updated: Jan 1, 2024</span>
+                    </div>
+                    <div class="policy-item">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="#">Sick Leave & Medical Certificate Requirements</a>
+                        <span class="policy-date">Updated: Feb 15, 2024</span>
+                    </div>
+                    <div class="policy-item">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="#">Parental & Bereavement Leave Policies</a>
+                        <span class="policy-date">Updated: Mar 10, 2024</span>
+                    </div>
+                    <div class="policy-item">
+                        <i class="fas fa-bullhorn"></i>
+                        <a href="#">Upcoming Public Holidays & Office Closures</a>
+                        <span class="policy-date announcement-tag">Announcement: Nov 1, 2024</span>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
-
-    <script>
-        // JavaScript for dynamic user avatar initials (if not already handled by PHP)
-        document.addEventListener('DOMContentLoaded', () => {
-            const userAvatarElements = document.querySelectorAll('.user-avatar-small, .sidebar-user-avatar');
-            // PHP has already inserted the name, so we just ensure consistency
-            userAvatarElements.forEach(avatar => {
-                if (!avatar.src.includes("text=")) { // If placeholder not already generated by PHP
-                    const name = "<?php echo $loggedInUserName; ?>"; // Get name from PHP
-                    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-                    avatar.src = `https://via.placeholder.com/40x40?text=${initials}`;
-                    avatar.alt = `${name} Avatar`;
-                }
-            });
-        });
-    </script>
 </body>
 </html>
