@@ -1,396 +1,447 @@
 /* Import Google Fonts - Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Variables for consistent styling - REVERTED TO ORIGINAL DASHBOARD.JPG THEME COLORS */
+/* Variables for consistent styling */
 :root {
-    --primary-yellow: #FFC107; /* The vibrant yellow from the original dashboard.jpg */
-    --accent-yellow-light: #FFEB3B; /* Lighter yellow for subtle accents */
+    --primary-yellow: #FFC107;
+    --accent-yellow-light: #FFEB3B;
     
-    --dark-grey: #333333; /* Dark text/element color */
-    --medium-grey: #666666; /* Medium grey for secondary text */
-    --light-grey: #e0e0e0; /* Light grey for borders */
-    --very-light-grey-bg: #f8f8f8; /* A very light grey for subtle backgrounds/hover */
+    --dark-text: #333333;
+    --medium-text: #666666;
+    --light-border: rgba(255, 255, 255, 0.2);
+    --lighter-border: rgba(255, 255, 255, 0.1);
 
-    /* Transparent backgrounds with blur for the glassmorphism effect */
-    --card-background-transparent: rgba(255, 255, 255, 0.4); /* 40% opaque white for cards */
-    --sidebar-background-transparent: rgba(255, 255, 255, 0.5); /* 50% opaque white for sidebar */
+    /* Card Background: Translucent white with blur */
+    --card-background: rgba(255, 255, 255, 0.4);
     
-    --shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow for depth */
+    /* Left Panel Background: Highly translucent white with stronger blur */
+    --left-panel-background: rgba(255, 255, 255, 0.05);
+    --left-panel-item-background-hover: rgba(255, 255, 255, 0.15);
+    --left-panel-active-bg: var(--primary-yellow);
+    --left-panel-icon-color: rgba(0, 0, 0, 0.5);
+    --left-panel-icon-active-color: var(--dark-text);
+
+    --shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     --border-radius-card: 15px;
     --border-radius-button: 8px;
+    --border-radius-pill: 50px;
 
-    /* Status Colors (standard for clarity) */
-    --status-approved: #4CAF50; /* Green */
-    --status-pending: #FFC107; /* Amber (using primary yellow) */
-    --status-rejected: #F44336; /* Red */
+    /* Status Colors */
+    --status-approved: #4CAF50;
+    --status-pending: #FFC107;
+    --status-rejected: #F44336;
 }
 
-body {
-    font-family: 'Inter', sans-serif;
+/* --- Base & Overall Layout --- */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #e6e6e6; /* A very light, neutral grey fallback if bg.jpg doesn't load */
-    display: flex;
-    min-height: 100vh;
-    overflow-x: hidden;
+    overflow: hidden; /* Keep hidden on html/body to prevent overall page scroll */
+    font-family: 'Inter', sans-serif;
+    background-color: #e6e6e6; /* Fallback for background */
 }
 
 .dashboard-container {
     display: flex;
-    width: 100%;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh; /* Make container take full viewport height */
+    
     background-image: url('../assets/background.jpg');
-    background-size: cover; /* Ensures the image covers the entire container */
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: center center; /* Center the background image */
-    background-attachment: fixed; /* Keeps background fixed when scrolling */
-    padding: 20px; /* Padding around the whole dashboard to show background */
-    box-sizing: border-box; /* Include padding in width/height */
+    background-position: center center;
+    background-attachment: fixed;
+    
+    box-sizing: border-box;
 }
 
-/* --- Sidebar Styling --- */
-.sidebar {
-    width: 280px;
-    background-color: var(--sidebar-background-transparent); /* More opaque transparent background */
-    border-radius: var(--border-radius-card); /* Apply border-radius to the entire sidebar */
-    padding: 25px 20px;
+/* --- Left Panel (Fixed & Translucent Floating Buttons) --- */
+.left-panel {
+    width: 280px; /* Fixed width for the left panel */
+    height: 100%; /* Take full height of the dashboard-container */
     display: flex;
     flex-direction: column;
-    /* ENHANCEMENT: Even stronger, more diffused shadow for a distinct float */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.6); /* **INCREASED SHADOW AND INNER GLOW** */
+    padding: 20px; /* Internal padding */
+    box-sizing: border-box;
     z-index: 10;
-    margin-right: 20px; /* Space between sidebar and main content */
-    backdrop-filter: blur(20px); /* **EVEN MORE BLUR** */
-    -webkit-backdrop-filter: blur(20px); /* For Safari */
-    border: 1px solid rgba(255, 255, 255, 0.6); /* **SLIGHTLY MORE VISIBLE BORDER** */
+    overflow-y: hidden; /* KEEP THIS: Prevent left panel from scrolling */
+    
+    /* Glassmorphism for the entire panel */
+    background-color: var(--left-panel-background);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-right: 1px solid var(--lighter-border);
 }
 
-.sidebar .logo {
-    font-size: 26px; /* Slightly larger logo */
-    font-weight: 700;
-    color: var(--dark-grey);
-    margin-bottom: 35px; /* More space below logo */
+.left-panel .logo {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--dark-text);
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 10px 0 20px;
 }
 
-.sidebar .logo i {
-    color: var(--primary-yellow); /* Yellow for logo icon */
-    font-size: 28px; /* Slightly larger icon */
+.left-panel .logo i {
+    color: var(--primary-yellow);
+    font-size: 28px;
 }
 
-.sidebar .search-bar {
-    background-color: rgba(255, 255, 255, 0.1); /* Lighter transparent search bar */
+.left-panel .search-bar {
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius-button);
-    padding: 10px 15px;
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.4); /* More visible border */
+    border: 1px solid var(--lighter-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 10px 15px;
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
 }
 
-.sidebar .search-bar i {
-    color: var(--medium-grey);
+.left-panel .search-bar i {
+    color: var(--medium-text);
 }
 
-.sidebar .search-bar input {
+.left-panel .search-bar input {
     border: none;
     background: none;
     outline: none;
     width: 100%;
     font-size: 15px;
-    color: var(--dark-grey);
-    padding: 0;
+    color: var(--dark-text);
 }
-.sidebar .search-bar input::placeholder {
-    color: var(--medium-grey);
+.left-panel .search-bar input::placeholder {
+    color: var(--medium-text);
 }
 
-.sidebar .nav-section-title {
-    font-size: 14px;
-    color: var(--medium-grey);
+.left-panel .nav-section-title {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5);
     text-transform: uppercase;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    padding-left: 15px;
-    letter-spacing: 0.5px; /* Slight letter spacing for titles */
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    letter-spacing: 1px;
+    font-weight: 600;
 }
 
-
-.sidebar nav ul, .sidebar .quick-links ul {
+.left-panel nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.sidebar nav li, .sidebar .quick-links li {
-    margin-bottom: 6px; /* Slightly reduced margin for tighter list */
+.left-panel nav li {
+    margin-bottom: 8px;
 }
 
-.sidebar nav a, .sidebar .quick-links a {
+.left-panel nav a {
     display: flex;
     align-items: center;
     gap: 15px;
-    padding: 12px 15px;
+    padding: 10px 15px;
     text-decoration: none;
-    color: var(--dark-grey);
+    color: var(--dark-text);
     font-weight: 500;
-    border-radius: var(--border-radius-button);
-    transition: background-color 0.2s, color 0.2s, transform 0.2s; /* Added transform for hover */
+    font-size: 16px;
+    border-radius: var(--border-radius-pill);
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, border-color 0.3s;
+    background-color: transparent;
+    border: 1px solid transparent;
 }
 
-.sidebar nav a i, .sidebar .quick-links a i {
-    color: var(--medium-grey);
+.left-panel nav a i {
+    color: var(--left-panel-icon-color);
     font-size: 18px;
+    transition: color 0.3s;
 }
 
-.sidebar nav li.active a {
-    background-color: var(--primary-yellow); /* Vibrant yellow for active state */
-    color: var(--dark-grey);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    /* ENHANCEMENT: Added a subtle offset or line for active state */
-    position: relative;
-    overflow: hidden; /* Ensure overflow is hidden for pseudo-element */
-}
-/* ENHANCEMENT: Small indicator line for active state */
-.sidebar nav li.active a::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 5px; /* Width of the indicator line */
-    height: 80%; /* Height of the indicator line */
-    background-color: var(--dark-grey); /* Color of the indicator line */
-    border-radius: 0 5px 5px 0; /* Rounded right edge */
+.left-panel nav li.active a {
+    background-color: var(--left-panel-active-bg);
+    color: var(--dark-text);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
 }
 
-.sidebar nav li.active a i {
-    color: var(--dark-grey);
+.left-panel nav li.active a i {
+    color: var(--left-panel-icon-active-color);
 }
 
-.sidebar nav a:hover:not(.active),
-.sidebar .quick-links a:hover {
-    background-color: rgba(255, 255, 255, 0.25); /* Slightly more opaque hover */
-    color: var(--dark-grey);
-    transform: translateX(5px); /* Slight movement on hover */
+.left-panel nav a:hover:not(.active) {
+    background-color: var(--left-panel-item-background-hover);
+    color: var(--dark-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-.quick-links {
-    margin-top: 25px;
-    padding-top: 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-
-.user-profile {
+/* User Profile */
+.left-panel .user-profile {
     margin-top: auto;
     display: flex;
     align-items: center;
     gap: 15px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    /* ENHANCEMENT: Slight background on hover for user profile */
-    transition: background-color 0.2s;
-    border-radius: var(--border-radius-button);
-    padding: 20px 10px 0 10px; /* Adjust padding for better look */
-    margin-left: -10px; /* Compensate for padding to keep alignment */
-    margin-right: -10px;
-}
-.user-profile:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px 0;
+    border-top: 1px solid var(--lighter-border);
 }
 
-
-.user-profile .profile-pic {
+.left-panel .user-profile .profile-pic {
     width: 45px;
     height: 45px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-yellow); /* Yellow border for profile pic */
+    border: 2px solid var(--primary-yellow);
 }
 
-.user-profile .user-info {
+.left-panel .user-profile .user-info {
     flex-grow: 1;
 }
 
-.user-profile .user-name {
+.left-panel .user-profile .user-name {
     font-weight: 600;
-    color: var(--dark-grey);
+    color: var(--dark-text);
     font-size: 16px;
 }
 
-.user-profile .user-role {
+.left-panel .user-profile .user-role {
     font-size: 13px;
-    color: var(--medium-grey);
+    color: var(--medium-text);
 }
 
-.user-profile .notification-icon {
+.left-panel .user-profile .notification-icon {
     font-size: 20px;
-    color: var(--medium-grey);
+    color: var(--medium-text);
     cursor: pointer;
     transition: color 0.2s;
 }
-.user-profile .notification-icon:hover {
+.left-panel .user-profile .notification-icon:hover {
     color: var(--primary-yellow);
 }
 
-/* --- Main Content Styling --- */
+/* Logout Button */
+.logout-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+    border: 1px solid var(--lighter-border);
+    padding: 10px 15px;
+    border-radius: var(--border-radius-button);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    justify-content: center;
+}
+.logout-button:hover {
+    background-color: var(--primary-yellow);
+    color: var(--dark-text);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.logout-button i {
+    font-size: 18px;
+    color: var(--medium-text);
+    transition: color 0.2s;
+}
+.logout-button:hover i {
+    color: var(--dark-text);
+}
+
+
+/* --- Main Content Area (SCROLLABLE) --- */
 .main-content {
     flex-grow: 1;
-    padding: 0;
+    padding: 20px; /* Reduced from 25px */
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    height: 100%; /* Important: Constrain height to enable scrolling */
+    overflow-y: auto; /* THIS IS THE KEY: Makes this area scrollable */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    gap: 15px; /* Reduced gap between major sections from 20px */
+
+    /* Custom Scrollbar Styling (Optional but good for glassmorphism) */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--primary-yellow) rgba(255, 255, 255, 0.1); /* Firefox */
 }
+/* Webkit (Chrome, Safari) scrollbar styling */
+.main-content::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+.main-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); /* Transparent track */
+    border-radius: 4px;
+}
+.main-content::-webkit-scrollbar-thumb {
+    background-color: var(--primary-yellow); /* Color of the thumb */
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Border around the thumb */
+}
+
 
 /* Header */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25px;
-    background-color: var(--card-background-transparent); /* Transparent header */
+    padding: 12px 20px; /* Reduced padding from 15px 25px */
+    background-color: var(--card-background);
     border-radius: var(--border-radius-card);
     box-shadow: var(--shadow);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--light-border);
+    flex-shrink: 0;
 }
 
 .main-header .breadcrumbs {
-    color: var(--medium-grey);
-    font-size: 14px;
-    margin-bottom: 5px;
+    color: var(--medium-text);
+    font-size: 12px; /* Reduced font size */
+    margin-bottom: 3px; /* Reduced margin */
 }
 
 .main-header h1 {
-    font-size: 32px;
+    font-size: 24px; /* Reduced font size from 28px */
     font-weight: 700;
-    color: var(--dark-grey);
+    color: var(--dark-text);
     margin: 0;
 }
 
 .main-header .date {
-    font-size: 15px;
-    color: var(--medium-grey);
-    margin-top: 5px;
+    font-size: 13px; /* Reduced font size */
+    color: var(--medium-text);
+    margin-top: 3px; /* Reduced margin */
 }
 
 /* Request New Leave Button */
 .request-new-leave-button {
-    background-color: var(--primary-yellow); /* Main action button */
-    color: var(--dark-grey);
+    background-color: var(--primary-yellow);
+    color: var(--dark-text);
     border: none;
-    padding: 12px 25px;
+    padding: 8px 15px; /* Reduced padding */
     border-radius: var(--border-radius-button);
     font-weight: 600;
-    font-size: 15px;
+    font-size: 13px; /* Reduced font size */
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px; /* Reduced gap */
     box-shadow: 0 4px 8px rgba(0,0,0,0.08);
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    text-decoration: none; /* <-- ADD THIS LINE */
+    text-decoration: none;
 }
 .request-new-leave-button:hover {
-    background-color: var(--accent-yellow-light); /* Slightly lighter on hover */
+    background-color: var(--accent-yellow-light);
     box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 }
 .request-new-leave-button i {
-    font-size: 18px;
+    font-size: 14px; /* Reduced font size */
 }
+
 /* --- General Card Styling --- */
 .card {
-    background-color: var(--card-background-transparent); /* Transparent white */
+    background-color: var(--card-background);
     border-radius: var(--border-radius-card);
-    padding: 25px;
+    padding: 15px; /* Reduced padding from 20px */
     box-shadow: var(--shadow);
-    backdrop-filter: blur(10px); /* Frosted glass effect */
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--light-border);
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Reduced margin from 15px */
     font-weight: 600;
-    color: var(--dark-grey);
+    color: var(--dark-text);
+    font-size: 15px; /* Reduced font size from 17px */
 }
 
 .card-header .fas.fa-ellipsis-h {
-    color: var(--medium-grey);
+    color: var(--medium-text);
     cursor: pointer;
+    font-size: 14px; /* Reduced font size */
 }
 
 /* --- Row 1: Key Leave Metrics Grid --- */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 10px; /* Reduced gap from 15px */
+    flex-shrink: 0;
 }
 
 .metric-card {
-    background-color: var(--card-background-transparent); /* Transparent for consistency */
+    background-color: var(--card-background);
     border-radius: var(--border-radius-card);
-    padding: 20px 25px;
+    padding: 10px 12px; /* Reduced padding from 15px 18px */
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    gap: 3px; /* Reduced gap from 5px */
+    border: 1px solid var(--light-border);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 
 .metric-card .metric-icon {
-    font-size: 24px;
-    color: var(--primary-yellow); /* Yellow for icons */
+    font-size: 18px; /* Reduced font size from 20px */
+    color: var(--primary-yellow);
 }
 
 .metric-card .metric-value {
-    font-size: 28px;
+    font-size: 20px; /* Reduced font size from 24px */
     font-weight: 700;
-    color: var(--dark-grey);
+    color: var(--dark-text);
 }
 
 .metric-card .metric-label {
-    font-size: 15px;
-    color: var(--medium-grey);
+    font-size: 11px; /* Reduced font size from 13px */
+    color: var(--medium-text);
 }
 
-/* --- Row 2: Middle Row Grid (Upcoming Leaves, Pending Requests, Right Stack) --- */
-.middle-row-grid {
+/* --- Bottom Row Grid (Upcoming Leaves, Calendar, Pending, Detailed Balances) --- */
+.bottom-row-grid {
     display: grid;
-    grid-template-columns: 2fr 1.2fr 1fr;
-    gap: 20px;
-    align-items: start;
+    /* Set up for four equal-width columns */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px; /* Reduced gap from 15px */
+    flex-grow: 1;
 }
 
-/* My Upcoming Leaves Card */
-.upcoming-leaves-card {
+/* Ensure cards in this grid take up the available height within their row */
+.bottom-row-grid > .card {
     display: flex;
     flex-direction: column;
+    height: auto; 
+    min-height: 180px; /* Slightly reduced min-height, adjust as needed */
+    box-sizing: border-box;
 }
 
+
+/* Upcoming Leaves Card */
 .upcoming-leaves-card .card-header {
-    margin-bottom: 15px;
+    margin-bottom: 8px; /* Reduced margin */
 }
 
 .upcoming-leaves-card .date-filter {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--medium-grey);
+    gap: 4px; /* Reduced gap */
+    color: var(--medium-text);
     font-weight: 500;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 11px; /* Reduced font size */
 }
 .upcoming-leaves-card .date-filter i {
     color: var(--primary-yellow);
@@ -399,37 +450,56 @@ body {
 .leave-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px; /* Reduced gap */
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 3px; /* Reduced padding */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-yellow) rgba(255, 255, 255, 0.1);
 }
+.leave-list::-webkit-scrollbar {
+    width: 5px; /* Reduced scrollbar width */
+}
+.leave-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+.leave-list::-webkit-scrollbar-thumb {
+    background-color: var(--primary-yellow);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 
 .leave-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
-    background-color: rgba(255, 255, 255, 0.2); /* Very light background for items */
-    border-radius: 10px;
+    padding: 6px 8px; /* Reduced padding */
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 6px; /* Reduced border radius */
     border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(5px); /* Subtle blur for items */
+    backdrop-filter: blur(5px);
+    flex-shrink: 0;
 }
 
 .leave-item .leave-details {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 0px; /* Reduced gap */
 }
 
 .leave-item .item-title {
     font-weight: 600;
-    color: var(--dark-grey);
-    font-size: 16px;
+    color: var(--dark-text);
+    font-size: 13px; /* Reduced font size */
 }
 
 .item-status {
-    font-size: 13px;
+    font-size: 10px; /* Reduced font size */
     font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 5px;
+    padding: 1px 5px; /* Reduced padding */
+    border-radius: 3px; /* Reduced border radius */
     display: inline-block;
 }
 .approved-status {
@@ -438,30 +508,174 @@ body {
 }
 
 .leave-item .leave-options {
-    color: var(--medium-grey);
+    color: var(--medium-text);
     cursor: pointer;
+    font-size: 14px; /* Reduced font size */
 }
+
+
+/* Calendar Card Styling */
+.calendar-card {
+    padding: 12px; /* Reduced padding from 15px */
+    box-sizing: border-box;
+    display: flex; 
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to start */
+    height: 100%; /* Crucial for it to match peer cards */
+}
+.calendar-card .card-header {
+    margin-bottom: 8px; /* Reduced margin */
+}
+
+/* Ensure FullCalendar container fills its parent card */
+.calendar-card #fullcalendar {
+    height: 100%; /* Crucial for FullCalendar to take height */
+    width: 100%;
+    flex-grow: 1; /* Allow it to grow within the flex container (calendar-card) */
+    overflow: hidden; /* Hide any overflow from the calendar grid itself if it's too tall */
+}
+
+/* Overriding FullCalendar defaults for aesthetics */
+.fc {
+    font-family: 'Inter', sans-serif; /* Use your dashboard font */
+    color: var(--dark-text); /* Default text color */
+    font-size: 0.75em; /* Further reduced font size */
+    height: 100%; /* Ensure the FC wrapper takes 100% of its parent (#fullcalendar) */
+}
+
+.fc .fc-toolbar-title {
+    font-size: 0.9em; /* Further reduced title size */
+    font-weight: 700;
+    color: var(--dark-text);
+}
+
+/* Hide all FullCalendar navigation buttons for this compact view */
+.fc .fc-button-primary,
+.fc .fc-button-group {
+    display: none; 
+}
+
+.fc .fc-daygrid-head-container {
+    background-color: rgba(255, 255, 255, 0.1); /* Light background for weekday headers */
+    border-radius: 6px 6px 0 0; /* Reduced border radius */
+    margin-top: 3px; /* Reduced margin */
+}
+
+.fc .fc-col-header-cell-cushion {
+    color: var(--medium-text); /* Weekday text color */
+    font-size: 0.7em; /* Further reduced header text */
+    font-weight: 600;
+    padding: 1px 0; /* Reduced padding */
+    text-align: center; /* Center weekday names */
+}
+
+.fc .fc-daygrid-day-number {
+    color: var(--dark-text); /* Day number color */
+    font-weight: 500;
+    font-size: 0.65em; /* Further reduced day numbers */
+    padding: 0.5px; /* Reduced padding */
+    text-align: end; /* Align day number to the end (top-rightish) */
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: rgba(255, 193, 7, 0.08); /* Light yellow background for today */
+    border-radius: 4px; /* Reduced border radius */
+    border: 1px solid var(--primary-yellow); /* Border for today */
+}
+
+.fc .fc-daygrid-day-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Push number to top-right */
+    padding: 1px; /* Reduced padding */
+}
+
+.fc .fc-daygrid-event {
+    background-color: var(--primary-yellow); /* Event background color */
+    border-radius: 2px; /* Reduced border radius */
+    padding: 0.5px 2px; /* Reduced padding */
+    margin-top: 0.5px; /* Reduced margin */
+    font-size: 0.6em; /* Further reduced event text */
+    color: var(--dark-text); /* Event text color */
+    font-weight: 600;
+    border: none; /* Remove event border for cleaner look */
+    overflow: hidden; /* Prevent event text from breaking layout */
+    white-space: nowrap; /* Keep event title on one line if possible */
+    text-overflow: ellipsis; /* Indicate if text is overflowing */
+}
+
+.fc-view-harness {
+    height: 100% !important; /* Important to override FullCalendar's default dynamic height if needed */
+}
+
+.fc-daygrid-day-events {
+    margin-top: 0.5px; /* Reduced margin */
+    min-height: 0.8em; /* Adjusted min-height */
+}
+
+.fc .fc-popover {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--light-border);
+    border-radius: 10px; /* Reduced border radius */
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+.fc .fc-popover-header {
+    background-color: var(--primary-yellow);
+    color: var(--dark-text);
+    border-bottom: 1px solid var(--light-border);
+    padding: 6px 8px; /* Reduced padding */
+    font-weight: 600;
+    font-size: 0.9em; /* Reduced font size */
+}
+.fc .fc-popover-body {
+    padding: 8px; /* Reduced padding */
+    font-size: 0.8em; /* Reduced font size */
+}
+
+/* Adjust cell padding for cleaner look */
+.fc-daygrid-day {
+    padding: 2px; /* Reduced padding */
+}
+
 
 /* Pending Leave Requests Card */
 .pending-requests-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 .request-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 6px; /* Reduced gap */
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 3px; /* Reduced padding */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-yellow) rgba(255, 255, 255, 0.1);
+}
+.request-list::-webkit-scrollbar {
+    width: 5px; /* Reduced scrollbar width */
+}
+.request-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+.request-list::-webkit-scrollbar-thumb {
+    background-color: var(--primary-yellow);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .request-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 12px 0;
+    gap: 3px; /* Reduced gap */
+    padding: 6px 0; /* Reduced padding */
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
 }
 .request-item:last-child {
     border-bottom: none;
@@ -470,40 +684,40 @@ body {
 
 .request-item .request-title {
     font-weight: 600;
-    color: var(--dark-grey);
-    font-size: 16px;
+    color: var(--dark-text);
+    font-size: 13px; /* Reduced font size */
 }
 
 .request-status.pending-status {
     background-color: rgba(255, 193, 7, 0.1);
     color: var(--status-pending);
-    padding: 4px 8px;
-    border-radius: 5px;
+    padding: 1px 5px; /* Reduced padding */
+    border-radius: 3px; /* Reduced border radius */
     align-self: flex-start;
-    font-size: 13px;
+    font-size: 10px; /* Reduced font size */
     font-weight: 600;
 }
 
 .request-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 5px;
+    gap: 5px; /* Reduced gap */
+    margin-top: 2px; /* Reduced margin */
 }
 
 .request-actions button {
-    border: 1px solid var(--primary-yellow); /* Yellow border */
+    border: 1px solid var(--primary-yellow);
     background-color: transparent;
-    color: var(--dark-grey);
-    padding: 6px 12px;
+    color: var(--dark-text);
+    padding: 3px 6px; /* Reduced padding */
     border-radius: var(--border-radius-button);
-    font-size: 13px;
+    font-size: 10px; /* Reduced font size */
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
 }
 
 .request-actions button.view-details-button:hover {
     background-color: var(--primary-yellow);
-    color: var(--dark-grey);
+    color: var(--dark-text);
 }
 .request-actions button.cancel-request-button {
     color: var(--status-rejected);
@@ -514,24 +728,6 @@ body {
     color: white;
 }
 
-.request-summary-chart {
-    text-align: center;
-    margin-top: auto;
-}
-.chart-placeholder {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 5px;
-}
-
-
-/* Right Column Stack */
-.right-column-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
 
 /* Detailed Leave Balances Card */
 .detailed-balances-card {
@@ -542,9 +738,10 @@ body {
 .balance-item {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    padding: 10px 0;
+    gap: 2px; /* Reduced gap */
+    padding: 5px 0; /* Reduced padding */
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
 }
 .balance-item:last-child {
     border-bottom: none;
@@ -553,15 +750,15 @@ body {
 
 .balance-item .balance-type {
     font-weight: 600;
-    color: var(--dark-grey);
-    font-size: 15px;
+    color: var(--dark-text);
+    font-size: 12px; /* Reduced font size */
 }
 
 .balance-numbers {
     display: flex;
-    gap: 15px;
-    font-size: 13px;
-    color: var(--medium-grey);
+    gap: 8px; /* Reduced gap */
+    font-size: 10px; /* Reduced font size */
+    color: var(--medium-text);
 }
 .balance-numbers span {
     white-space: nowrap;
@@ -572,236 +769,201 @@ body {
 }
 
 
-/* Recent Leave History Card */
-.recent-history-card {
-    display: flex;
-    flex-direction: column;
+/* --- Responsive Adjustments --- */
+@media (max-width: 1500px) {
+    .bottom-row-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .upcoming-leaves-card {
+        grid-column: 1 / 2;
+    }
+    /* Calendar Card will now be in the 2nd position */
+    .calendar-card {
+        grid-column: 2 / 3; 
+    }
+    .pending-requests-card {
+        grid-column: 1 / 2;
+    }
+    .detailed-balances-card {
+        grid-column: 2 / 3;
+    }
+    /* Adjust calendar font size on smaller screens to keep it readable */
+    .calendar-card .fc {
+        font-size: 0.7em;
+    }
+    .calendar-card .fc .fc-toolbar-title {
+        font-size: 0.85em;
+    }
 }
 
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.history-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
-}
-.history-item:last-child {
-    border-bottom: none;
-}
-
-.history-item .history-details {
-    font-weight: 500;
-    color: var(--dark-grey);
-    font-size: 15px;
-}
-.history-item .history-status {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 3px 6px;
-    border-radius: 4px;
-    background-color: rgba(76, 175, 80, 0.1);
-    color: var(--status-approved);
-}
-
-.view-full-history-button {
-    background-color: var(--primary-yellow);
-    color: var(--dark-grey);
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius-button);
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.2s ease-in-out;
-}
-.view-full-history-button:hover {
-    background-color: var(--accent-yellow-light);
-}
-
-
-/* --- Row 3: Company Leave Policies/Announcements --- */
-.policies-announcements-card {
-    padding: 30px;
-}
-
-.policies-header {
-    margin-bottom: 25px;
-    display: flex;
-    align-items: center;
-}
-
-.policies-header h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--dark-grey);
-    margin: 0;
-    flex-grow: 1;
-}
-
-.search-policy {
-    display: flex;
-    align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: var(--border-radius-button);
-    padding: 8px 15px;
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.search-policy input {
-    border: none;
-    outline: none;
-    background: none;
-    font-size: 14px;
-    padding-right: 10px;
-    color: var(--dark-grey);
-}
-.search-policy input::placeholder {
-    color: var(--medium-grey);
-}
-
-.search-policy i {
-    color: var(--medium-grey);
-}
-
-.policy-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.policy-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-.policy-item:last-child {
-    border-bottom: none;
-}
-
-.policy-item i {
-    font-size: 20px;
-    color: var(--primary-yellow); /* Icon color */
-}
-
-.policy-item a {
-    text-decoration: none;
-    color: var(--dark-grey);
-    font-weight: 500;
-    font-size: 16px;
-    flex-grow: 1;
-}
-.policy-item a:hover {
-    color: var(--primary-yellow);
-}
-
-.policy-item .policy-date {
-    font-size: 13px;
-    color: var(--medium-grey);
-    white-space: nowrap;
-}
-
-.policy-item .announcement-tag {
-    background-color: rgba(255, 193, 7, 0.1);
-    color: var(--status-pending);
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-weight: 600;
-}
-
-/* --- Responsive adjustments (basic) --- */
 @media (max-width: 1200px) {
-    .middle-row-grid {
-        grid-template-columns: 1.5fr 1fr;
-    }
-    .right-column-stack {
-        grid-column: span 2;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    .detailed-balances-card, .recent-history-card {
-        flex: 1 1 45%;
-        min-width: 280px;
-    }
-}
-
-@media (max-width: 992px) {
-    .dashboard-container {
-        flex-direction: column;
+    .left-panel {
+        width: 220px; /* Further reduced left panel width */
         padding: 15px;
     }
-    .sidebar {
-        width: 100%;
-        padding: 20px;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        margin-right: 0;
-        margin-bottom: 20px;
+    .left-panel .logo {
+        font-size: 24px;
     }
-    .sidebar .logo, .sidebar .search-bar, .user-profile {
-        margin-bottom: 0;
+    .left-panel .logo i {
+        font-size: 26px;
     }
-    .sidebar .main-nav, .sidebar .quick-links {
-        width: 100%;
-        border-top: none;
-        padding-top: 0;
+    .left-panel nav a {
+        padding: 8px 12px;
+        font-size: 14px;
     }
-    .sidebar .main-nav h3, .sidebar .quick-links h3 {
-        padding-left: 0;
+    .left-panel nav a i {
+        font-size: 16px;
     }
-    .sidebar nav ul, .sidebar .quick-links ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
+    .left-panel .user-profile .profile-pic {
+        width: 40px;
+        height: 40px;
     }
-    .sidebar nav li, .sidebar .quick-links li {
-        flex: 1 1 auto;
-        min-width: 120px;
+    .left-panel .user-profile .user-name {
+        font-size: 15px;
     }
-    .user-profile {
-        width: 100%;
-        justify-content: center;
-        margin-top: 20px;
+    .left-panel .user-profile .user-role {
+        font-size: 12px;
+    }
+    .left-panel .logout-button {
+        padding: 8px 12px;
+        font-size: 14px;
     }
 
     .main-content {
-        padding: 0;
+        padding: 10px; /* Further reduced padding */
+        gap: 10px; /* Further reduced gap */
     }
     .main-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
+        padding: 10px 15px; /* Further reduced padding */
+    }
+    .main-header h1 {
+        font-size: 22px;
+    }
+    .main-header .date {
+        font-size: 12px;
     }
     .request-new-leave-button {
-        width: 100%;
-        justify-content: center;
+        padding: 6px 12px;
+        font-size: 12px;
     }
-    .metrics-grid, .middle-row-grid, .leave-balances-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    .request-new-leave-button i {
+        font-size: 13px;
     }
-    .right-column-stack {
-        flex-direction: column;
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px; /* Further reduced gap */
+    }
+    .metric-card {
+        padding: 8px 10px; /* Further reduced padding */
+    }
+    .metric-card .metric-value {
+        font-size: 18px;
+    }
+    .metric-card .metric-label {
+        font-size: 11px;
+    }
+    .bottom-row-grid {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+        gap: 10px;
+    }
+    /* When stacked, let cards adjust height automatically within the scrollable main content */
+    .upcoming-leaves-card,
+    .calendar-card,
+    .pending-requests-card,
+    .detailed-balances-card {
+        height: auto;
+        min-height: unset; /* Remove min-height to allow content to truly dictate size */
+    }
+    /* Adjust calendar font size on smaller screens */
+    .calendar-card .fc {
+        font-size: 0.7em; /* Still smaller for tight fit */
     }
 }
 
 @media (max-width: 768px) {
-    .middle-row-grid {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .left-panel {
+        position: relative;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--lighter-border);
+        padding-bottom: 10px;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        overflow-y: auto;
+        max-height: 40vh; /* Allow some scroll for the side menu */
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .main-content {
+        flex-grow: 1;
+        padding: 10px;
+        height: auto;
+        overflow-y: auto;
+    }
+    .metrics-grid {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 8px 10px;
+    }
+    .main-header h1 {
+        font-size: 20px;
+    }
+    .request-new-leave-button {
+        width: 100%;
+        justify-content: center;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    .card {
+        padding: 10px; /* Even smaller padding for general cards */
+    }
+    .card-header {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    .leave-item .item-title, .request-item .request-title {
+        font-size: 12px;
+    }
+    .item-status, .request-status.pending-status {
+        font-size: 9px;
+    }
+    .balance-item .balance-type {
+        font-size: 11px;
+    }
+    .balance-numbers {
+        font-size: 9px;
+    }
+    .request-actions button {
+        padding: 2px 5px;
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
         grid-template-columns: 1fr;
     }
-    .right-column-stack {
-        grid-column: span 1;
+    .metric-card {
+        align-items: center;
+    }
+    .left-panel .search-bar input {
+        font-size: 14px;
+    }
+    .left-panel nav a {
+        font-size: 13px;
+    }
+    .left-panel .user-profile .user-name {
+        font-size: 14px;
+    }
+    .left-panel .user-profile .user-role {
+        font-size: 11px;
     }
 }

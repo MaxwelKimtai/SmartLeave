@@ -35,15 +35,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // This is the main check for user existence and password verification
             if ($user && password_verify($password, $user['password'])) {
                 // Successful login
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_role'] = $user['role']; // Store the user's role in session
 
-                // ✅ FIX: No output before redirect
-                header("Location: dashboard.php");
-                exit();
-            } else {
+                // Role-based redirection
+                if ($user['role'] === 'manager') {
+                    header("Location: manager_dashboard.php"); // Redirect manager to manager dashboard
+                    exit();
+                } else {
+                    // Default for 'employee' or any other role
+                    header("Location:dashboard.php"); // Redirect others (employees) to employee dashboard
+                    exit();
+                }
+            } else { // This 'else' correctly belongs to the 'if ($user && password_verify(...))'
                 $login_error = "Invalid email or password.";
             }
         } catch (PDOException $e) {
@@ -130,9 +138,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p class="signup-link">Don't have an account? <a href="register.php">Sign Up</a></p>
                 </div>
             </section>
-                        </div>
-                    </div>
-                </div>
         </main>
     </div>
     
