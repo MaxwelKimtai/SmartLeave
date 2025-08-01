@@ -154,7 +154,7 @@ html, body {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding-left: 120px; /* Matched to register.css */
+    padding-left: 420px; /* Matched to register.css */
     height: 100%;
     box-sizing: border-box;
 }

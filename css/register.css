@@ -27,7 +27,7 @@ html, body {
     font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 
     /* Background Image Properties */
-    background-image: url('../assets/register.jpg'); /* <-- IMPORTANT: Update this path */
+    background-image: url('../assets/background.jpg'); /* <-- IMPORTANT: Update this path */
     background-size: cover; /* Ensures the image covers the entire viewport */
     background-position: center center; /* Centers the image */
     background-repeat: no-repeat; /* Prevents the image from tiling */
@@ -147,7 +147,7 @@ html, body {
     display: flex;
     justify-content: flex-start; /* Pushes content to the very left of this panel */
     align-items: center; /* Vertically center the form card within the left panel's height */
-    padding-left: 120px; /* EXACTLY match the left offset from Screenshot (141).jpg */
+    padding-left: 420px; /* EXACTLY match the left offset from Screenshot (141).jpg */
     height: 100%;
     box-sizing: border-box;
 }
