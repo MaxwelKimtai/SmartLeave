@@ -54,7 +54,7 @@
                 <div class="user-profile">
                     <!-- Placeholder for user image/avatar -->
                     <img src="https://placehold.co/40x40/FFC107/333333?text=M" alt="Manager Avatar" class="avatar">
-                    <span class="user-name">John Doe</span>
+                    <span class="user-name">Manager</span>
                     <i class="fas fa-bell notification-icon"></i>
                 </div>
             </header>
@@ -64,21 +64,21 @@
                 <div class="summary-card">
                     <div class="card-icon"><i class="fas fa-users"></i></div>
                     <div class="card-info">
-                        <h3>250</h3>
+                        <h3>85</h3>
                         <p>Total Employees</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
                     <div class="card-info">
-                        <h3>12</h3>
+                        <h3>1</h3>
                         <p>Pending Requests</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="card-icon"><i class="fas fa-check-circle"></i></div>
                     <div class="card-info">
-                        <h3>85</h3>
+                        <h3>29</h3>
                         <p>Approved This Month</p>
                     </div>
                 </div>
@@ -122,11 +122,11 @@
                                 </td>
                             </tr>
                             <tr data-request-id="2">
-                                <td>Michael Brown</td>
-                                <td>Annual Leave</td>
-                                <td>2025-08-10</td>
-                                <td>2025-08-15</td>
-                                <td>6</td>
+                                <td>Maxwel Kimtai</td>
+                                <td>Casual Leave</td>
+                                <td>2025-08-08</td>
+                                <td>2025-08-31</td>
+                                <td>16</td>
                                 <td>Family vacation</td>
                                 <td class="actions">
                                     <button class="action-button approve-button" data-action="approve"><i class="fas fa-check"></i> Approve</button>
