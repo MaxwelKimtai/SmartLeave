@@ -147,7 +147,7 @@ html, body {
     display: flex;
     justify-content: flex-start; /* Pushes content to the very left of this panel */
     align-items: center; /* Vertically center the form card within the left panel's height */
-    padding-left: 420px; /* EXACTLY match the left offset from Screenshot (141).jpg */
+    padding-left: 420px; 
     height: 100%;
     box-sizing: border-box;
 }
@@ -158,7 +158,7 @@ html, body {
     box-shadow: 0 15px 40px var(--card-shadow);
     padding: 25px; /* Consistent padding */
     width: 100%;
-    max-width: 390px; /* Increased max-width to match Screenshot (141).jpg precisely */
+    max-width: 390px; 
     min-height: 400px; /* Ensuring adequate height */
     height: auto;
     box-sizing: border-box;
@@ -365,8 +365,8 @@ html, body {
 }
 
 .daily-meeting-card {
-    bottom: 50px; /* Based on Screenshot (141).jpg */
-    right: 80px; /* Based on Screenshot (141).jpg */
+    bottom: 50px; 
+    right: 80px; 
     left: auto;
     transform: none;
     z-index: 10;
@@ -380,7 +380,7 @@ html, body {
     box-shadow: 0 8px 25px var(--light-shadow);
     max-width: 240px;
     position: absolute;
-    top: 55%; /* Based on Screenshot (141).jpg */
+    top: 55%; 
     left: 50%;
     transform: translate(-70%, -30%); /* Fine-tuned to position it correctly relative to its center */
     z-index: 10;
@@ -420,8 +420,8 @@ html, body {
 /* Avatars */
 .avatars {
     position: absolute;
-    right: 40px; /* Based on Screenshot (141).jpg */
-    bottom: 100px; /* Based on Screenshot (141).jpg */
+    right: 40px; 
+    bottom: 100px; 
     display: flex;
     flex-direction: row;
     z-index: 11;

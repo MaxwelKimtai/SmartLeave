@@ -37,7 +37,7 @@
             <div class="user-profile">
                 <img src="assets/profile.png" alt="User Profile" class="profile-pic">
                 <div class="user-info">
-                    <div class="user-name">Maxwel</div>
+                    <div class="user-name"></div>
                     <div class="user-role">Employee</div>
                 </div>
                 <i class="fas fa-bell notification-icon"></i>
@@ -313,6 +313,14 @@
                 console.warn('FullCalendar element with ID "fullcalendar" not found!');
             }
         });
+
+    
+// Store Laravel API token from PHP session into browser localStorage
+<?php if (isset($_SESSION['api_token'])): ?>
+    localStorage.setItem('token', "<?php echo $_SESSION['api_token']; ?>");
+    console.log("Token stored in localStorage:", localStorage.getItem('token'));
+<?php endif; ?>
+
     </script>
 </body>
 </html>

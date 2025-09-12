@@ -1,8 +1,56 @@
 <?php
 session_start();
+
+// ✅ Step 1: Force login if token is missing
+if (!isset($_SESSION['api_token'])) {
+    http_response_code(401);
+    echo json_encode(['message' => 'Not logged in']);
+    exit();
+}
+
+// ✅ Get session values
 $eid = $_SESSION['employee_id'] ?? null;
+$apiToken = $_SESSION['api_token'];
+
+// ✅ Step 2: If POST, forward request to Laravel API
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $apiUrl = 'http://127.0.0.1:8000/api/leave_requests';
+
+    // Prepare payload from frontend POST
+    $payload = json_encode([
+        'leave_type'     => $_POST['leave_type'] ?? null,
+        'start_date'     => $_POST['start_date'] ?? null,
+        'end_date'       => $_POST['end_date'] ?? null,
+        'number_of_days' => $_POST['number_of_days'] ?? null,
+        'reason'         => $_POST['reason'] ?? null,
+        'handover_notes' => $_POST['handover_notes'] ?? null
+    ]);
+
+    // Forward request to Laravel API
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Accept: application/json',
+        'Authorization: Bearer ' . $apiToken
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    // Pass Laravel API's response back to the frontend
+    header('Content-Type: application/json');
+    echo $response;
+    exit();
+}
 ?>
-<script>window.currentEmployeeId = <?= json_encode($eid) ?? 'null' ?>;</script>
+<script>
+    // ✅ Pass PHP session variables to JS for use if needed
+    window.currentEmployeeId = <?php echo json_encode($eid); ?>;
+</script>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -696,7 +744,6 @@ $eid = $_SESSION['employee_id'] ?? null;
             });
             
             closeModalBtn.addEventListener('click', () => successModal.classList.add('hidden'));
-
 leaveForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -706,48 +753,42 @@ leaveForm.addEventListener('submit', async (e) => {
     }
     confirmError.classList.add('hidden');
 
-    // Build form data
-    let payload = new FormData();
+    const payload = new FormData();
     payload.append('leave_type', formData.leaveType);
-    payload.append('start_date', formData.startDate.toISOString().split('T')[0]);
-    payload.append('end_date', formData.endDate.toISOString().split('T')[0]);
+    payload.append('start_date', formData.startDate ? formData.startDate.toISOString().split('T')[0] : '');
+    payload.append('end_date', formData.endDate ? formData.endDate.toISOString().split('T')[0] : '');
     payload.append('number_of_days', formData.numberOfDays);
-    payload.append('reason', formData.reason);
-    payload.append('handover_notes', formData.handoverNotes);
+    payload.append('reason', reasonInput.value);
+    payload.append('handover_notes', handoverNotesInput.value || '');
     if (formData.attachment) {
         payload.append('attachment', formData.attachment);
     }
 
     try {
-        let response = await fetch('http://127.0.0.1:8000/api/leave_requests', {
-            method: 'POST',
+        const response = await fetch("request_leave.php", {
+            method: "POST",
             body: payload
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            try {
-                let error = await response.json();
-                console.error(error);
-            } catch {
-                console.error("Unknown error occurred");
-            }
-            alert("Something went wrong. Please check the console.");
+            alert(data.message || 'Something went wrong');
             return;
         }
 
-        let result = await response.json();
-        console.log("Success:", result);
-        successModal.classList.remove('hidden'); // show success modal
-
-        // Optional: Reset form or navigate to first step
+        console.log('Success:', data);
+        successModal.classList.remove('hidden');
         navigateToStep(1);
 
-    } catch (error) {
-        console.error(error);
-        alert("Something went wrong. Please try again.");
+    } catch (err) {
+        console.error('Network error:', err);
+        alert('Could not send request');
     }
+});
+
+
         });
-    })
 
     </script>
 </body>

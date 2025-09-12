@@ -25,7 +25,7 @@
 body {
     font-family: 'Inter', sans-serif;
     color: var(--dark-grey);
-    background-image: url('../assets/background.jpg'); /* Your background image */
+    background-image: url('../assets/background.jpg'); 
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;

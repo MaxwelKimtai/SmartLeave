@@ -1,6 +1,3 @@
 <?php
-$password = "QWERTY123"; // your chosen password
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-echo $hashedPassword;
+echo password_hash("QWERTY", PASSWORD_DEFAULT);
 ?>

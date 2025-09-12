@@ -13,7 +13,7 @@ $login_error = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // CSRF check
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $login_error = "Invalid request. Please try again.";
+        $login_error = "Invalid request. Please refresh the page and try again.";
     } else {
         // DB config
         $host = 'localhost';
@@ -28,30 +28,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $pdo = new PDO($dsn, $user, $pass, $options);
 
-            $email = $_POST['email'] ?? '';
+            $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
 
             $stmt = $pdo->prepare("SELECT * FROM employee WHERE email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // This is the main check for user existence and password verification
             if ($user && password_verify($password, $user['password'])) {
-                // Successful login
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role']; // Store the user's role in session
+                // ✅ Step 1: Call Laravel API login
+                $apiUrl = 'http://127.0.0.1:8000/api/login';
+                $payload = json_encode(['email' => $email, 'password' => $password]);
 
-                // Role-based redirection
-                if ($user['role'] === 'manager') {
-                    header("Location: manager_dashboard.php"); // Redirect manager to manager dashboard
-                    exit();
+                $ch = curl_init($apiUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+
+                $apiResponse = curl_exec($ch);
+
+                if (curl_errno($ch)) {
+                    $login_error = "API connection error: " . curl_error($ch);
+                }
+
+                curl_close($ch);
+
+                $apiData = json_decode($apiResponse, true);
+
+                if (!$apiData || !isset($apiData['token'])) {
+                    $login_error = "Login failed: API did not return a token.";
                 } else {
-                    // Default for 'employee' or any other role
-                    header("Location:dashboard.php"); // Redirect others (employees) to employee dashboard
+                    // ✅ Use API response for role
+                    $_SESSION['user_id']   = $user['id'];
+                    $_SESSION['user_name'] = $user['name'];
+                    $_SESSION['user_role'] = $apiData['role'] ?? $user['role'];
+                    $_SESSION['api_token'] = $apiData['token']; 
+
+                    // ✅ Step 2: Redirect by role
+                    if ($_SESSION['user_role'] === 'manager') {
+                        header("Location: manager_dashboard.php");
+                    } else {
+                        header("Location: dashboard.php");
+                    }
                     exit();
                 }
-            } else { // This 'else' correctly belongs to the 'if ($user && password_verify(...))'
+            } else {
                 $login_error = "Invalid email or password.";
             }
         } catch (PDOException $e) {
@@ -59,7 +84,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+// Expose $login_error to your form page if needed
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,6 +168,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </section>
         </main>
     </div>
-    
 </body>
 </html>
