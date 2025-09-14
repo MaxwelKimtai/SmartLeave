@@ -59,22 +59,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $apiData = json_decode($apiResponse, true);
 
-                if (!$apiData || !isset($apiData['token'])) {
-                    $login_error = "Login failed: API did not return a token.";
-                } else {
-                    // ✅ Use API response for role
-                    $_SESSION['user_id']   = $user['id'];
-                    $_SESSION['user_name'] = $user['name'];
-                    $_SESSION['user_role'] = $apiData['role'] ?? $user['role'];
-                    $_SESSION['api_token'] = $apiData['token']; 
+                   if (!$apiData || !isset($apiData['token'])) {
+    $login_error = "Login failed: API did not return a token.";
+            } 
+            else {
+    // ✅ Use API response for user info + role
+    $_SESSION['user_id']   = $apiData['user']['id']   ?? $user['id'];
+    $_SESSION['user_name'] = $apiData['user']['name'] ?? $user['name'];
+    $_SESSION['user_role'] = $apiData['user']['role'] ?? $user['role'];
+    $_SESSION['api_token'] = $apiData['token'];
+    $_SESSION['employee_id'] = $apiData['user']['id'] ?? null;
 
-                    // ✅ Step 2: Redirect by role
-                    if ($_SESSION['user_role'] === 'manager') {
-                        header("Location: manager_dashboard.php");
-                    } else {
-                        header("Location: dashboard.php");
-                    }
-                    exit();
+    // ✅ Redirect based on role
+    if ($_SESSION['user_role'] === 'manager') {
+        header("Location: manager_dashboard.php");
+    } else {
+        header("Location: dashboard.php");
+    }
+        exit();
                 }
             } else {
                 $login_error = "Invalid email or password.";

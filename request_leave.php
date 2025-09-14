@@ -1,23 +1,29 @@
 <?php
 session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-// ✅ Step 1: Force login if token is missing
-if (!isset($_SESSION['api_token'])) {
+$eid = $_SESSION['employee_id'] ?? 'null'; // fallback to null
+
+// ✅ Step 1: Ensure employee is logged in
+if (!isset($_SESSION['api_token']) || !isset($_SESSION['employee_id'])) {
     http_response_code(401);
-    echo json_encode(['message' => 'Not logged in']);
+    echo json_encode(['message' => 'Not logged in as employee']);
     exit();
 }
 
-// ✅ Get session values
-$eid = $_SESSION['employee_id'] ?? null;
-$apiToken = $_SESSION['api_token'];
+$apiToken   = $_SESSION['api_token'];
+$employeeId = $_SESSION['employee_id']; // 👈 make sure this is set at login
 
-// ✅ Step 2: If POST, forward request to Laravel API
+// ✅ Step 2: Forward request to Laravel API
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $apiUrl = 'http://127.0.0.1:8000/api/leave_requests';
 
-    // Prepare payload from frontend POST
+    // Attach the correct employee_id so Laravel doesn’t assume "System Manager"
+    $eid = $_SESSION['employee_id'] ?? null;
+
     $payload = json_encode([
+        'employee_id'   => $eid,
         'leave_type'     => $_POST['leave_type'] ?? null,
         'start_date'     => $_POST['start_date'] ?? null,
         'end_date'       => $_POST['end_date'] ?? null,
@@ -26,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'handover_notes' => $_POST['handover_notes'] ?? null
     ]);
 
-    // Forward request to Laravel API
     $ch = curl_init($apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -40,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $response = curl_exec($ch);
     curl_close($ch);
 
-    // Pass Laravel API's response back to the frontend
     header('Content-Type: application/json');
     echo $response;
     exit();
@@ -48,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <script>
     // ✅ Pass PHP session variables to JS for use if needed
-    window.currentEmployeeId = <?php echo json_encode($eid); ?>;
+   window.currentEmployeeId = <?php echo json_encode($eid); ?>;
 </script>
 
 
@@ -436,314 +440,326 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Elements ---
-            const leaveForm = document.getElementById('leave-form');
-            const formContainer = document.getElementById('form-container');
-            const formTitle = document.getElementById('form-title');
-            const formDescription = document.getElementById('form-description');
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Elements ---
+    const leaveForm = document.getElementById('leave-form');
+    const formTitle = document.getElementById('form-title');
+    const formDescription = document.getElementById('form-description');
 
-            const step1Panel = document.getElementById('step-1-panel');
-            const step2Panel = document.getElementById('step-2-panel');
-            const step3Panel = document.getElementById('step-3-panel');
+    const step1Panel = document.getElementById('step-1-panel');
+    const step2Panel = document.getElementById('step-2-panel');
+    const step3Panel = document.getElementById('step-3-panel');
 
-            const nextStep1Btn = document.getElementById('next-step-1-btn');
-            const prevStep2Btn = document.getElementById('prev-step-2-btn');
-            const nextStep2Btn = document.getElementById('next-step-2-btn');
-            const prevStep3Btn = document.getElementById('prev-step-3-btn');
-            const submitBtn = document.getElementById('submit-btn');
+    const nextStep1Btn = document.getElementById('next-step-1-btn');
+    const prevStep2Btn = document.getElementById('prev-step-2-btn');
+    const nextStep2Btn = document.getElementById('next-step-2-btn');
+    const prevStep3Btn = document.getElementById('prev-step-3-btn');
+    const submitBtn = document.getElementById('submit-btn');
 
-            const leaveTypeInput = document.getElementById('leaveTypeInput');
-            const leaveTypeText = document.getElementById('leaveTypeText');
-            const leaveTypeSelector = document.getElementById('leaveTypeSelector');
-            const startDateInput = document.getElementById('startDateInput');
-            const startDateText = document.getElementById('startDateText');
-            const startDateCalendar = document.getElementById('startDateCalendar');
-            const endDateInput = document.getElementById('endDateInput');
-            const endDateText = document.getElementById('endDateText');
-            const endDateCalendar = document.getElementById('endDateCalendar');
-            const numberOfDaysInput = document.getElementById('numberOfDays');
-            const reasonInput = document.getElementById('reason');
-            const handoverNotesInput = document.getElementById('handoverNotes');
-            const fileNameSpan = document.getElementById('fileName');
-            const fileUploadInput = document.getElementById('file-upload');
-            const confirmCheckbox = document.getElementById('confirm-checkbox');
-            const confirmError = document.getElementById('confirm-error');
+    const leaveTypeInput = document.getElementById('leaveTypeInput');
+    const leaveTypeText = document.getElementById('leaveTypeText');
+    const leaveTypeSelector = document.getElementById('leaveTypeSelector');
+    const startDateInput = document.getElementById('startDateInput');
+    const startDateText = document.getElementById('startDateText');
+    const startDateCalendar = document.getElementById('startDateCalendar');
+    const endDateInput = document.getElementById('endDateInput');
+    const endDateText = document.getElementById('endDateText');
+    const endDateCalendar = document.getElementById('endDateCalendar');
+    const numberOfDaysInput = document.getElementById('numberOfDays');
+    const reasonInput = document.getElementById('reason');
+    const handoverNotesInput = document.getElementById('handoverNotes');
+    const fileNameSpan = document.getElementById('fileName');
+    const fileUploadInput = document.getElementById('file-upload');
+    const confirmCheckbox = document.getElementById('confirm-checkbox');
+    const confirmError = document.getElementById('confirm-error');
 
-            const successModal = document.getElementById('success-modal');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            
-            // --- Data and State ---
-            const leaveTypes = ['Casual Leave', 'Sick Leave', 'Annual Leave', 'Maternity Leave', 'Paternity Leave'];
-            let currentStep = 1;
-            let formData = {
-                leaveType: '',
-                startDate: null,
-                endDate: null,
-                numberOfDays: 0,
-                reason: '',
-                handoverNotes: '',
-                attachment: null,
-            };
+    const successModal = document.getElementById('success-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
 
-            // --- Helper Functions ---
-            function formatDate(date) {
-                if (!date) return 'dd/mm/yyyy';
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${day}/${month}/${year}`;
+    // --- Data and State ---
+    const leaveTypes = ['Casual Leave', 'Sick Leave', 'Annual Leave', 'Maternity Leave', 'Paternity Leave'];
+    let formData = {
+        leaveType: '',
+        startDate: null,
+        endDate: null,
+        numberOfDays: 0,
+        reason: '',
+        handoverNotes: '',
+        attachment: null,
+    };
+    
+    // --- Dummy Data (In a real app, this would come from an API) ---
+    const publicHolidays = ['2025-12-25', '2025-01-01']; 
+    const bookedLeaveDays = ['2025-10-10', '2025-10-11']; 
+
+    // --- Helper & Utility Functions ---
+    function formatDate(date) {
+        if (!date) return 'dd/mm/yyyy';
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function calculateWorkingDays(startDate, endDate) {
+        if (!startDate || !endDate || startDate > endDate) {
+            return 0;
+        }
+        let start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+        let workingDays = 0;
+        while (start <= end) {
+            const dayOfWeek = start.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) { // 0 = Sunday, 6 = Saturday
+                workingDays++;
+            }
+            start.setDate(start.getDate() + 1);
+        }
+        return workingDays;
+    }
+
+    // --- Step Navigation and Rendering ---
+    function navigateToStep(step) {
+        // Hide all panels
+        step1Panel.classList.add('hidden');
+        step2Panel.classList.add('hidden');
+        step3Panel.classList.add('hidden');
+
+        // Reset step indicators
+        document.querySelectorAll('.step-indicator-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('[id^="step-line-"]').forEach(el => el.classList.remove('bg-yellow-500'));
+
+        // Update UI based on the new step
+        if (step === 1) {
+            step1Panel.classList.remove('hidden');
+            document.getElementById('step-1-indicator').classList.add('active');
+            formTitle.textContent = "Apply for Leave";
+            formDescription.textContent = "Please provide your basic leave details.";
+        } else if (step === 2) {
+            step2Panel.classList.remove('hidden');
+            document.getElementById('step-1-indicator').classList.add('active');
+            document.getElementById('step-line-1').classList.add('bg-yellow-500');
+            document.getElementById('step-2-indicator').classList.add('active');
+            formTitle.textContent = "Purpose & Handover";
+            formDescription.textContent = "Tell us a bit more about your leave.";
+        } else if (step === 3) {
+            step3Panel.classList.remove('hidden');
+            document.getElementById('step-1-indicator').classList.add('active');
+            document.getElementById('step-line-1').classList.add('bg-yellow-500');
+            document.getElementById('step-2-indicator').classList.add('active');
+            document.getElementById('step-line-2').classList.add('bg-yellow-500');
+            document.getElementById('step-3-indicator').classList.add('active');
+            formTitle.textContent = "Final Review";
+            formDescription.textContent = "Please review your application before submitting.";
+            populateReviewPanel();
+        }
+    }
+
+    function populateReviewPanel() {
+        document.getElementById('review-leaveType').textContent = formData.leaveType || 'Not specified';
+        const startDateStr = formatDate(formData.startDate);
+        const endDateStr = formatDate(formData.endDate);
+        document.getElementById('review-dates').textContent = `${startDateStr} - ${endDateStr}`;
+        const days = calculateWorkingDays(formData.startDate, formData.endDate);
+        document.getElementById('review-numberOfDays').textContent = `${days} Day(s)`;
+        document.getElementById('review-reason').textContent = reasonInput.value || 'Not specified';
+        document.getElementById('review-handoverNotes').textContent = handoverNotesInput.value || 'None';
+        document.getElementById('review-attachment').textContent = formData.attachment ? formData.attachment.name : 'No file attached';
+
+        confirmCheckbox.checked = false;
+        toggleSubmitButton();
+    }
+
+    function toggleSubmitButton() {
+        if (confirmCheckbox.checked) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+    
+    // --- Calendar Logic ---
+    function isWeekend(date) {
+        const day = date.getDay();
+        return day === 0 || day === 6;
+    }
+
+    function isPublicHoliday(date) {
+        const publicHolidays = ['2025-12-25', '2025-01-01'];
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        return publicHolidays.includes(formattedDate);
+    }
+
+    function isAlreadyBooked(date) {
+        const bookedLeaveDays = ['2025-10-10', '2025-10-11'];
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        return bookedLeaveDays.includes(formattedDate);
+    }
+
+    function renderCalendar(targetElement, selectedDate, setDateCallback) {
+        let viewDate = selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+        function generateCalendarContent(date) {
+            const totalDays = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+            const firstDayIndex = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let calendarHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <button type="button" class="calendar-nav-btn prev-month-btn" aria-label="Previous month">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="font-bold text-black text-sm">
+                        ${date.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                    </span>
+                    <button type="button" class="calendar-nav-btn next-month-btn" aria-label="Next month">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center text-xs">
+                    <div class="calendar-day-label">Sun</div><div class="calendar-day-label">Mon</div><div class="calendar-day-label">Tue</div><div class="calendar-day-label">Wed</div><div class="calendar-day-label">Thu</div><div class="calendar-day-label">Fri</div><div class="calendar-day-label">Sat</div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 mt-1">
+                `;
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                calendarHTML += `<div class="text-gray-400"></div>`;
             }
 
-            // Inject leave type buttons
-            leaveTypes.forEach(type => {
-                const button = document.createElement('button');
-                button.textContent = type;
-                button.type = 'button';
-                button.className = `w-full leave-type-button`;
-                button.addEventListener('click', () => {
-                    formData.leaveType = type;
-                    leaveTypeText.textContent = type;
-                    leaveTypeSelector.classList.add('hidden');
-                    updateLeaveTypeButtons();
-                });
-                leaveTypeSelector.appendChild(button);
-            });
-
-            function updateLeaveTypeButtons() {
-                Array.from(leaveTypeSelector.children).forEach(button => {
-                    if (button.textContent === formData.leaveType) {
-                        button.classList.add('active');
-                    } else {
-                        button.classList.remove('active');
-                    }
-                });
-            }
-
-            function calculateWorkingDays() {
-                if (!formData.startDate || !formData.endDate || formData.startDate > formData.endDate) {
-                    formData.numberOfDays = 0;
-                    numberOfDaysInput.value = 0;
-                    return;
+            for (let i = 1; i <= totalDays; i++) {
+                const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
+                const isSelected = selectedDate && dayDate.toDateString() === selectedDate.toDateString();
+                const isDisabled = dayDate < today || isWeekend(dayDate) || isPublicHoliday(dayDate) || isAlreadyBooked(dayDate);
+                
+                let buttonClasses = `calendar-day-button ${isSelected ? 'active-day' : ''}`;
+                if (isDisabled) {
+                    buttonClasses += ' disabled-day';
                 }
-                
-                let start = new Date(formData.startDate.getFullYear(), formData.startDate.getMonth(), formData.startDate.getDate());
-                const end = new Date(formData.endDate.getFullYear(), formData.endDate.getMonth(), formData.endDate.getDate());
-                let workingDays = 0;
-                
-                while (start <= end) {
-                    const dayOfWeek = start.getDay();
-                    if (dayOfWeek !== 0 && dayOfWeek !== 6) { // 0 = Sunday, 6 = Saturday
-                        workingDays++;
-                    }
-                    start.setDate(start.getDate() + 1);
+                if (isWeekend(dayDate)) {
+                    buttonClasses += ' weekend-day';
                 }
-                
-                formData.numberOfDays = workingDays;
-                numberOfDaysInput.value = workingDays;
+                if (isPublicHoliday(dayDate)) {
+                    buttonClasses += ' public-holiday-day';
+                }
+                if (isAlreadyBooked(dayDate)) {
+                    buttonClasses += ' booked-day';
+                }
+
+                calendarHTML += `<button type="button" class="${buttonClasses}" data-day="${i}" ${isDisabled ? 'disabled' : ''} aria-label="Select ${dayDate.toDateString()}">${i}</button>`;
             }
             
-            function renderCalendar(targetElement, selectedDate, setDateCallback) {
-                let viewDate = selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-            
-                function generateCalendarContent(date) {
-                    const totalDays = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-                    const firstDayIndex = date.getDay();
-                    
-                    let calendarHTML = `
-                        <div class="flex items-center justify-between mb-2">
-                            <button type="button" class="calendar-nav-btn prev-month-btn">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <span class="font-bold text-black text-sm">
-                                ${date.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                            </span>
-                            <button type="button" class="calendar-nav-btn next-month-btn">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-7 gap-1 text-center text-xs">
-                            <div class="calendar-day-label">Sun</div><div class="calendar-day-label">Mon</div><div class="calendar-day-label">Tue</div><div class="calendar-day-label">Wed</div><div class="calendar-day-label">Thu</div><div class="calendar-day-label">Fri</div><div class="calendar-day-label">Sat</div>
-                        </div>
-                        <div class="grid grid-cols-7 gap-1 mt-1">
-                    `;
-    
-                    for (let i = 0; i < firstDayIndex; i++) {
-                        calendarHTML += `<div class="text-gray-400"></div>`;
-                    }
-    
-                    for (let i = 1; i <= totalDays; i++) {
-                        const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
-                        const isSelected = selectedDate && dayDate.toDateString() === selectedDate.toDateString();
-                        const buttonClasses = `calendar-day-button ${isSelected ? 'active-day' : ''}`;
-                        calendarHTML += `<button type="button" class="${buttonClasses}" data-day="${i}">${i}</button>`;
-                    }
-    
-                    calendarHTML += `</div>`;
-                    targetElement.innerHTML = calendarHTML;
-    
-                    targetElement.querySelector('.prev-month-btn').addEventListener('click', () => {
-                        viewDate.setMonth(viewDate.getMonth() - 1);
-                        generateCalendarContent(viewDate);
-                    });
-                    targetElement.querySelector('.next-month-btn').addEventListener('click', () => {
-                        viewDate.setMonth(viewDate.getMonth() + 1);
-                        generateCalendarContent(viewDate);
-                    });
-    
-                    targetElement.querySelectorAll('.calendar-day-button').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const day = parseInt(e.target.dataset.day);
-                            const selectedDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-                            setDateCallback(selectedDay);
-                            targetElement.classList.add('hidden');
-                        });
-                    });
-                }
-            
+            calendarHTML += `</div>`;
+            targetElement.innerHTML = calendarHTML;
+
+            // CORRECTED: BINDING THE EVENT LISTENERS INSIDE THE FUNCTION
+            targetElement.querySelector('.prev-month-btn').addEventListener('click', () => {
+                viewDate.setMonth(viewDate.getMonth() - 1);
                 generateCalendarContent(viewDate);
-            }
-
-            // --- Step Navigation and Rendering ---
-            function navigateToStep(step) {
-                // Hide all panels
-                step1Panel.classList.add('hidden');
-                step2Panel.classList.add('hidden');
-                step3Panel.classList.add('hidden');
-
-                // Reset step indicators
-                document.querySelectorAll('.step-indicator-item').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('[id^="step-line-"]').forEach(el => el.classList.remove('bg-yellow-500'));
-                
-                // Update UI based on the new step
-                if (step === 1) {
-                    step1Panel.classList.remove('hidden');
-                    document.getElementById('step-1-indicator').classList.add('active');
-                    formTitle.textContent = "Apply for Leave";
-                    formDescription.textContent = "Please provide your basic leave details.";
-                } else if (step === 2) {
-                    step2Panel.classList.remove('hidden');
-                    document.getElementById('step-1-indicator').classList.add('active');
-                    document.getElementById('step-line-1').classList.add('bg-yellow-500');
-                    document.getElementById('step-2-indicator').classList.add('active');
-                    formTitle.textContent = "Purpose & Handover";
-                    formDescription.textContent = "Tell us a bit more about your leave.";
-                } else if (step === 3) {
-                    step3Panel.classList.remove('hidden');
-                    document.getElementById('step-1-indicator').classList.add('active');
-                    document.getElementById('step-line-1').classList.add('bg-yellow-500');
-                    document.getElementById('step-2-indicator').classList.add('active');
-                    document.getElementById('step-line-2').classList.add('bg-yellow-500');
-                    document.getElementById('step-3-indicator').classList.add('active');
-                    formTitle.textContent = "Final Review";
-                    formDescription.textContent = "Please review your application before submitting.";
-                    populateReviewPanel();
-                }
-                currentStep = step;
-            }
-
-            function populateReviewPanel() {
-                document.getElementById('review-leaveType').textContent = formData.leaveType || 'Not specified';
-                const startDateStr = formatDate(formData.startDate);
-                const endDateStr = formatDate(formData.endDate);
-                document.getElementById('review-dates').textContent = `${startDateStr} - ${endDateStr}`;
-                document.getElementById('review-numberOfDays').textContent = `${formData.numberOfDays} Day(s)`;
-                document.getElementById('review-reason').textContent = reasonInput.value || 'Not specified';
-                document.getElementById('review-handoverNotes').textContent = handoverNotesInput.value || 'None';
-                document.getElementById('review-attachment').textContent = formData.attachment ? formData.attachment.name : 'No file attached';
-                
-                confirmCheckbox.checked = false;
-                toggleSubmitButton();
-            }
-
-            function toggleSubmitButton() {
-                if (confirmCheckbox.checked) {
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                } else {
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                }
-            }
-            
-            // --- Event Listeners ---
-            nextStep1Btn.addEventListener('click', () => {
-                if (!formData.leaveType || !formData.startDate || !formData.endDate) {
-                    alert('Please fill in all required fields (Leave Type, Start Date, End Date).');
-                    return;
-                }
-                navigateToStep(2);
+            });
+            targetElement.querySelector('.next-month-btn').addEventListener('click', () => {
+                viewDate.setMonth(viewDate.getMonth() + 1);
+                generateCalendarContent(viewDate);
             });
 
-            prevStep2Btn.addEventListener('click', () => navigateToStep(1));
-            nextStep2Btn.addEventListener('click', () => {
-                formData.reason = reasonInput.value;
-                formData.handoverNotes = handoverNotesInput.value;
-                navigateToStep(3);
-            });
-            
-            prevStep3Btn.addEventListener('click', () => navigateToStep(2));
-            confirmCheckbox.addEventListener('change', toggleSubmitButton);
-            
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => navigateToStep(parseInt(e.target.dataset.targetStep)));
-            });
-
-            leaveTypeInput.addEventListener('click', (e) => {
-                e.stopPropagation();
-                leaveTypeSelector.classList.toggle('hidden');
-                startDateCalendar.classList.add('hidden');
-                endDateCalendar.classList.add('hidden');
-            });
-
-            startDateInput.addEventListener('click', (e) => {
-                e.stopPropagation();
-                startDateCalendar.classList.toggle('hidden');
-                endDateCalendar.classList.add('hidden');
-                leaveTypeSelector.classList.add('hidden');
-                renderCalendar(startDateCalendar, formData.startDate, (date) => {
-                    formData.startDate = date;
-                    startDateText.textContent = formatDate(date);
-                    calculateWorkingDays();
+            targetElement.querySelectorAll('.calendar-day-button:not([disabled])').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const day = parseInt(e.target.dataset.day);
+                    const selectedDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+                    setDateCallback(selectedDay);
+                    targetElement.classList.add('hidden');
                 });
             });
+        }
 
-            endDateInput.addEventListener('click', (e) => {
-                e.stopPropagation();
-                endDateCalendar.classList.toggle('hidden');
-                startDateCalendar.classList.add('hidden');
-                leaveTypeSelector.classList.add('hidden');
-                renderCalendar(endDateCalendar, formData.endDate, (date) => {
-                    formData.endDate = date;
-                    endDateText.textContent = formatDate(date);
-                    calculateWorkingDays();
-                });
-            });
+        generateCalendarContent(viewDate);
+    }
 
-            document.addEventListener('click', (e) => {
-                if (!startDateCalendar.contains(e.target) && !startDateInput.contains(e.target)) {
-                    startDateCalendar.classList.add('hidden');
-                }
-                if (!endDateCalendar.contains(e.target) && !endDateInput.contains(e.target)) {
-                    endDateCalendar.classList.add('hidden');
-                }
-                if (!leaveTypeSelector.contains(e.target) && !leaveTypeInput.contains(e.target)) {
-                    leaveTypeSelector.classList.add('hidden');
-                }
-            });
+    // --- Event Listeners ---
+    leaveTypeInput.addEventListener('click', () => {
+        leaveTypeSelector.classList.toggle('hidden');
+    });
 
-            fileUploadInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    formData.attachment = file;
-                    fileNameSpan.textContent = file.name;
-                } else {
-                    formData.attachment = null;
-                    fileNameSpan.textContent = 'Choose a file';
-                }
+    leaveTypes.forEach(type => {
+        const button = document.createElement('button');
+        button.textContent = type;
+        button.className = 'leave-type-button w-full mb-1';
+        button.addEventListener('click', () => {
+            formData.leaveType = type;
+            leaveTypeText.textContent = type;
+            leaveTypeSelector.classList.add('hidden');
+        });
+        leaveTypeSelector.appendChild(button);
+    });
+
+    startDateInput.addEventListener('click', () => {
+        startDateCalendar.classList.toggle('hidden');
+        // RE-RENDER CALENDAR EACH TIME
+        if (!startDateCalendar.classList.contains('hidden')) {
+            renderCalendar(startDateCalendar, formData.startDate, (date) => {
+                formData.startDate = date;
+                startDateText.textContent = formatDate(date);
+                numberOfDaysInput.value = calculateWorkingDays(formData.startDate, formData.endDate);
             });
-            
-            closeModalBtn.addEventListener('click', () => successModal.classList.add('hidden'));
+        }
+    });
+
+    // CORRECTED: ADD THE EVENT LISTENER FOR THE END DATE
+    endDateInput.addEventListener('click', () => {
+        endDateCalendar.classList.toggle('hidden');
+        // RE-RENDER CALENDAR EACH TIME
+        if (!endDateCalendar.classList.contains('hidden')) {
+            renderCalendar(endDateCalendar, formData.endDate, (date) => {
+                formData.endDate = date;
+                endDateText.textContent = formatDate(date);
+                numberOfDaysInput.value = calculateWorkingDays(formData.startDate, formData.endDate);
+            });
+        }
+    });
+
+    nextStep1Btn.addEventListener('click', () => {
+        if (!formData.leaveType || !formData.startDate || !formData.endDate) {
+            alert("Please select a leave type, start date, and end date.");
+            return;
+        }
+        if (formData.startDate > formData.endDate) {
+            alert("Start date cannot be after end date.");
+            return;
+        }
+        navigateToStep(2);
+    });
+
+    prevStep2Btn.addEventListener('click', () => {
+        navigateToStep(1);
+    });
+
+    nextStep2Btn.addEventListener('click', () => {
+        if (!reasonInput.value) {
+            alert("Please provide a reason for your leave.");
+            return;
+        }
+        navigateToStep(3);
+    });
+
+    prevStep3Btn.addEventListener('click', () => {
+        navigateToStep(2);
+    });
+
+    confirmCheckbox.addEventListener('change', toggleSubmitButton);
+    
+    fileUploadInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            fileNameSpan.textContent = file.name;
+            formData.attachment = file;
+        } else {
+            fileNameSpan.textContent = 'Choose a file';
+            formData.attachment = null;
+        }
+    });
+
 leaveForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -752,12 +768,16 @@ leaveForm.addEventListener('submit', async (e) => {
         return;
     }
     confirmError.classList.add('hidden');
+    
+    // Add a loading state for better UX
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
 
     const payload = new FormData();
     payload.append('leave_type', formData.leaveType);
     payload.append('start_date', formData.startDate ? formData.startDate.toISOString().split('T')[0] : '');
     payload.append('end_date', formData.endDate ? formData.endDate.toISOString().split('T')[0] : '');
-    payload.append('number_of_days', formData.numberOfDays);
+    payload.append('number_of_days', calculateWorkingDays(formData.startDate, formData.endDate));
     payload.append('reason', reasonInput.value);
     payload.append('handover_notes', handoverNotesInput.value || '');
     if (formData.attachment) {
@@ -770,26 +790,41 @@ leaveForm.addEventListener('submit', async (e) => {
             body: payload
         });
 
-        const data = await response.json();
+        // Check if response is JSON before parsing
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Something went wrong on the server.');
+            }
+            console.log('Success:', data);
+            successModal.classList.remove('hidden');
+            successModal.classList.add('flex');
 
-        if (!response.ok) {
-            alert(data.message || 'Something went wrong');
-            return;
+            // ✅ Auto-redirect after 3 seconds
+            const redirectTimeout = setTimeout(() => {
+            window.location.href = "dashboard.php"; // change path if needed
+            }, 3000);
+
+            // ✅ Redirect if user clicks "Close" button
+            closeModalBtn.addEventListener('click', () => {
+            clearTimeout(redirectTimeout);
+            window.location.href = "dashboard.php";
+            }, { once: true });
+        } else {
+            const text = await response.text();
+            throw new Error('Server did not return JSON. Response was: ' + text);
         }
-
-        console.log('Success:', data);
-        successModal.classList.remove('hidden');
-        navigateToStep(1);
-
     } catch (err) {
-        console.error('Network error:', err);
-        alert('Could not send request');
+        console.error('Submission error:', err);
+        alert('Could not send request: ' + err.message);
+    } finally {
+        submitBtn.textContent = 'Submit Application';
+        toggleSubmitButton();
     }
 });
 
-
-        });
-
+})
     </script>
 </body>
 </html>
