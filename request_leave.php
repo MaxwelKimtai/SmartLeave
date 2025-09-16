@@ -1,64 +1,95 @@
 <?php
 session_start();
+session_regenerate_id(true);
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$eid = $_SESSION['employee_id'] ?? 'null'; // fallback to null
-
-// ✅ Step 1: Ensure employee is logged in
-if (!isset($_SESSION['api_token']) || !isset($_SESSION['employee_id'])) {
-    http_response_code(401);
-    echo json_encode(['message' => 'Not logged in as employee']);
-    exit();
+// Generate CSRF token if not exists
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-$apiToken   = $_SESSION['api_token'];
-$employeeId = $_SESSION['employee_id']; // 👈 make sure this is set at login
-
-// ✅ Step 2: Forward request to Laravel API
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $apiUrl = 'http://127.0.0.1:8000/api/leave_requests';
+    header('Content-Type: application/json');
 
-    // Attach the correct employee_id so Laravel doesn’t assume "System Manager"
-    $eid = $_SESSION['employee_id'] ?? null;
+    // ✅ Ensure employee is logged in (use dedicated keys)
+    if (empty($_SESSION['employee_api_token']) || empty($_SESSION['employee_id'])) {
+        http_response_code(401);
+        echo json_encode(['message' => 'Not logged in as employee']);
+        exit();
+    }
 
-    $payload = json_encode([
-        'employee_id'   => $eid,
+    // ✅ Validate CSRF token
+    $csrfToken = $_POST['csrf_token'] ?? '';
+    if (!hash_equals($_SESSION['csrf_token'], $csrfToken)) {
+        http_response_code(419);
+        echo json_encode(['message' => 'Invalid CSRF token']);
+        exit();
+    }
+
+    // ✅ Extract token and employee ID
+    $apiToken   = $_SESSION['employee_api_token'];
+    $employeeId = $_SESSION['employee_id'];
+
+    // ✅ Prepare payload for API
+    $payload = [
+        'employee_id'    => $employeeId, // stays tied to employee session
         'leave_type'     => $_POST['leave_type'] ?? null,
         'start_date'     => $_POST['start_date'] ?? null,
         'end_date'       => $_POST['end_date'] ?? null,
         'number_of_days' => $_POST['number_of_days'] ?? null,
         'reason'         => $_POST['reason'] ?? null,
         'handover_notes' => $_POST['handover_notes'] ?? null
-    ]);
+    ];
 
+    // ✅ Handle file upload if present
+    if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['attachment'];
+        $payload['attachment'] = new CURLFile(
+            $file['tmp_name'],
+            mime_content_type($file['tmp_name']),
+            $file['name']
+        );
+    }
+
+    // ✅ Call Laravel API
+    $apiUrl = 'http://127.0.0.1:8000/api/leave_requests';
     $ch = curl_init($apiUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Accept: application/json',
-        'Authorization: Bearer ' . $apiToken
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_HTTPHEADER => [
+            'Accept: application/json',
+            'Authorization: Bearer ' . $apiToken,
+        ],
+        CURLOPT_POSTFIELDS     => $payload,
     ]);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
     $response = curl_exec($ch);
+    if ($response === false) {
+        http_response_code(500);
+        echo json_encode(['message' => 'cURL error: ' . curl_error($ch)]);
+        exit();
+    }
+    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    header('Content-Type: application/json');
+    // ✅ Forward Laravel response
+    http_response_code($statusCode);
     echo $response;
     exit();
 }
 ?>
-<script>
-    // ✅ Pass PHP session variables to JS for use if needed
-   window.currentEmployeeId = <?php echo json_encode($eid); ?>;
-</script>
 
+<!-- CSRF token for JS -->
+<script>
+window.csrfToken = '<?php echo $_SESSION['csrf_token']; ?>';
+</script>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leave Application Form</title>
@@ -556,19 +587,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateReviewPanel() {
-        document.getElementById('review-leaveType').textContent = formData.leaveType || 'Not specified';
-        const startDateStr = formatDate(formData.startDate);
-        const endDateStr = formatDate(formData.endDate);
-        document.getElementById('review-dates').textContent = `${startDateStr} - ${endDateStr}`;
-        const days = calculateWorkingDays(formData.startDate, formData.endDate);
-        document.getElementById('review-numberOfDays').textContent = `${days} Day(s)`;
-        document.getElementById('review-reason').textContent = reasonInput.value || 'Not specified';
-        document.getElementById('review-handoverNotes').textContent = handoverNotesInput.value || 'None';
-        document.getElementById('review-attachment').textContent = formData.attachment ? formData.attachment.name : 'No file attached';
+    const days = calculateWorkingDays(formData.startDate, formData.endDate);
+    formData.numberOfDays = days; // ✅ keep synced
 
-        confirmCheckbox.checked = false;
-        toggleSubmitButton();
-    }
+    document.getElementById('review-leaveType').textContent = formData.leaveType || 'Not specified';
+    document.getElementById('review-dates').textContent = `${formatDate(formData.startDate)} - ${formatDate(formData.endDate)}`;
+    document.getElementById('review-numberOfDays').textContent = `${days} Day(s)`;
+    document.getElementById('review-reason').textContent = reasonInput.value || 'Not specified';
+    document.getElementById('review-handoverNotes').textContent = handoverNotesInput.value || 'None';
+    document.getElementById('review-attachment').textContent = formData.attachment ? formData.attachment.name : 'No file attached';
+
+    confirmCheckbox.checked = false;
+    toggleSubmitButton();
+}
+
 
     function toggleSubmitButton() {
         if (confirmCheckbox.checked) {
@@ -768,16 +800,25 @@ leaveForm.addEventListener('submit', async (e) => {
         return;
     }
     confirmError.classList.add('hidden');
-    
-    // Add a loading state for better UX
+
+    // 🔒 Require login
+    const token = sessionStorage.getItem('api_token');
+    if (!token) {
+        alert("Please log in first.");
+        window.location.href = "login.php";
+        return;
+    }
+
+    // Add a loading state
     submitBtn.textContent = 'Submitting...';
     submitBtn.disabled = true;
 
+    // Build payload with FormData (good for file upload)
     const payload = new FormData();
     payload.append('leave_type', formData.leaveType);
     payload.append('start_date', formData.startDate ? formData.startDate.toISOString().split('T')[0] : '');
     payload.append('end_date', formData.endDate ? formData.endDate.toISOString().split('T')[0] : '');
-    payload.append('number_of_days', calculateWorkingDays(formData.startDate, formData.endDate));
+    payload.append('number_of_days', formData.numberOfDays);
     payload.append('reason', reasonInput.value);
     payload.append('handover_notes', handoverNotesInput.value || '');
     if (formData.attachment) {
@@ -785,36 +826,38 @@ leaveForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch("request_leave.php", {
+        const response = await fetch("http://127.0.0.1:8000/api/employee/leave_requests", {
             method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token
+                // NOTE: do not set Content-Type here, fetch will auto-set for FormData
+            },
             body: payload
         });
 
-        // Check if response is JSON before parsing
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || 'Something went wrong on the server.');
-            }
-            console.log('Success:', data);
-            successModal.classList.remove('hidden');
-            successModal.classList.add('flex');
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.message || `HTTP ${response.status}`);
+        }
 
-            // ✅ Auto-redirect after 3 seconds
-            const redirectTimeout = setTimeout(() => {
-            window.location.href = "dashboard.php"; // change path if needed
-            }, 3000);
+        const data = await response.json();
+        console.log('Success:', data);
 
-            // ✅ Redirect if user clicks "Close" button
-            closeModalBtn.addEventListener('click', () => {
+        // Show success modal
+        successModal.classList.remove('hidden');
+        successModal.classList.add('flex');
+
+        // Auto-redirect after 3 seconds
+        const redirectTimeout = setTimeout(() => {
+            window.location.href = "dashboard.php";
+        }, 3000);
+
+        // Redirect immediately if user clicks "Close"
+        closeModalBtn.addEventListener('click', () => {
             clearTimeout(redirectTimeout);
             window.location.href = "dashboard.php";
-            }, { once: true });
-        } else {
-            const text = await response.text();
-            throw new Error('Server did not return JSON. Response was: ' + text);
-        }
+        }, { once: true });
+
     } catch (err) {
         console.error('Submission error:', err);
         alert('Could not send request: ' + err.message);
@@ -825,6 +868,7 @@ leaveForm.addEventListener('submit', async (e) => {
 });
 
 })
+
     </script>
 </body>
 </html>

@@ -1,69 +1,7 @@
-<?php
-session_start();
-require_once __DIR__ . '/config.php';
-
-// ✅ Check login
-$apiToken = $_SESSION['api_token'] ?? null;
-if (!$apiToken) {
-    header("Location: login.php");
-    exit;
-}
-
-// ✅ Handle AJAX fetch (proxy to Laravel)
-if (isset($_GET['fetch_pending'])) {
-    header('Content-Type: application/json');
-    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-    header("Pragma: no-cache");
-
-    $ch = curl_init(API_BASE_URL . '/manager/leave_requests');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Accept: application/json',
-        'Authorization: Bearer ' . $apiToken
-    ]);
-
-    $response = curl_exec($ch);
-    if ($response === false) {
-        http_response_code(500);
-        echo json_encode(['message' => curl_error($ch)]);
-        exit;
-    }
-    curl_close($ch);
-
-    echo $response;
-    exit;
-}
-
-// ✅ Handle Approve/Reject (proxy)
-if (isset($_POST['action'], $_POST['request_id'])) {
-    $action = $_POST['action']; // approve or reject
-    $id = $_POST['request_id'];
-
-    $ch = curl_init(API_BASE_URL . "/manager/leave_requests/$id/$action");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Accept: application/json',
-        'Authorization: Bearer ' . $apiToken
-    ]);
-
-    $response = curl_exec($ch);
-    if ($response === false) {
-        http_response_code(500);
-        echo json_encode(['message' => curl_error($ch)]);
-        exit;
-    }
-    curl_close($ch);
-
-    header('Content-Type: application/json');
-    echo $response;
-    exit;
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager Dashboard - Smart Leave</title>
@@ -106,23 +44,36 @@ if (isset($_POST['action'], $_POST['request_id'])) {
         </header>
 
         <section class="dashboard-summary">
-            <div class="summary-card">
-                <div class="card-icon"><i class="fas fa-users"></i></div>
-                <div class="card-info"><h3>85</h3><p>Total Employees</p></div>
-            </div>
-            <div class="summary-card">
-                <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
-                <div class="card-info"><h3>1</h3><p>Pending Requests</p></div>
-            </div>
-            <div class="summary-card">
-                <div class="card-icon"><i class="fas fa-check-circle"></i></div>
-                <div class="card-info"><h3>29</h3><p>Approved This Month</p></div>
-            </div>
-            <div class="summary-card">
-                <div class="card-icon"><i class="fas fa-times-circle"></i></div>
-                <div class="card-info"><h3>3</h3><p>Rejected This Month</p></div>
-            </div>
-        </section>
+    <div class="summary-card">
+        <div class="card-icon"><i class="fas fa-users"></i></div>
+        <div class="card-info">
+            <h3 id="totalEmployees">0</h3>
+            <p>Total Employees</p>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
+        <div class="card-info">
+            <h3 id="pendingRequests">0</h3>
+            <p>Pending Requests</p>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="card-info">
+            <h3 id="approvedRequests">0</h3>
+            <p>Approved</p>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="card-icon"><i class="fas fa-times-circle"></i></div>
+        <div class="card-info">
+            <h3 id="rejectedRequests">0</h3>
+            <p>Rejected</p>
+        </div>
+    </div>
+</section>
+
 
         <section class="pending-requests-section">
             <h2><i class="fas fa-list-alt"></i> Pending Leave Requests</h2>
@@ -151,11 +102,23 @@ if (isset($_POST['action'], $_POST['request_id'])) {
 <div id="toast-container"></div>
 
 <script>
-// ✅ Use PHP constant inside JS
-const API_BASE_URL = "<?php echo API_BASE_URL; ?>";
-localStorage.setItem('token', <?php echo json_encode($apiToken); ?>);
+// ✅ Get auth details from sessionStorage
+const TOKEN = sessionStorage.getItem('api_token');
+const USER_NAME = sessionStorage.getItem('user_name');
+const USER_ROLE = sessionStorage.getItem('user_role');
 
+// ✅ Block non-managers
+if (!TOKEN || USER_ROLE !== 'manager') {
+    window.location.href = "login.php";
+}
+
+// ✅ Personalize UI
+document.querySelector('.user-name').textContent = USER_NAME || "Manager";
+document.querySelector('.greeting h1').textContent = `Good Morning, ${USER_NAME || "Manager"}!`;
+
+// ================================
 // Toast function
+// ================================
 function showToast(message, type = 'success') {
     const toastContainer = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -163,7 +126,7 @@ function showToast(message, type = 'success') {
     toast.textContent = message;
     toastContainer.appendChild(toast);
 
-    void toast.offsetWidth;
+    void toast.offsetWidth; // force reflow
     toast.classList.add('show');
 
     setTimeout(() => {
@@ -173,43 +136,40 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// ✅ Load pending leave requests (through PHP proxy)
+// ================================
+// Load pending leave requests
+// ================================
 async function loadPendingRequests() {
     const tbody = document.querySelector('.pending-requests-section tbody');
     tbody.innerHTML = `<tr><td colspan="7">Loading pending requests...</td></tr>`;
 
     try {
-        const res = await fetch('manager_dashboard.php?fetch_pending=1');
-        const text = await res.text();
+        const res = await fetch('http://127.0.0.1:8000/api/manager/leave_requests', {
+            headers: {
+                'Authorization': `Bearer ${TOKEN}`,
+                'Accept': 'application/json'
+            }
+        });
 
-        if (!res.ok) {
-            tbody.innerHTML = `<tr><td colspan="7">Error loading requests</td></tr>`;
-            console.error('Error fetching requests:', text);
+        const data = await res.json();
+
+        if (!res.ok || data.success === false) {
+            tbody.innerHTML = `<tr><td colspan="7">Error loading requests: ${data?.message || res.statusText}</td></tr>`;
             return;
         }
 
-        let data;
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            console.error('Invalid JSON received:', text.substring(0, 300) + '...');
-            tbody.innerHTML = `<tr><td colspan="7">Server returned invalid data.</td></tr>`;
-            return;
-        }
-
-        const pendingRequests = data.pending ?? [];
-
+        const pendingRequests = Array.isArray(data.data) ? data.data : [];
         tbody.innerHTML = '';
-        if (!Array.isArray(pendingRequests) || pendingRequests.length === 0) {
+
+        if (pendingRequests.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7">No pending requests.</td></tr>`;
             return;
         }
 
         pendingRequests.forEach(req => {
-            const employeeName = req.employee?.name || 'Unknown';
             tbody.innerHTML += `
                 <tr data-request-id="${req.id}">
-                    <td>${employeeName}</td>
+                    <td>${req.employee?.name ?? 'Unknown'}</td>
                     <td>${req.leave_type ?? '-'}</td>
                     <td>${req.start_date ?? '-'}</td>
                     <td>${req.end_date ?? '-'}</td>
@@ -231,7 +191,9 @@ async function loadPendingRequests() {
     }
 }
 
-// ✅ Approve/Reject button binding
+// ================================
+// Approve / Reject actions
+// ================================
 function bindActionButtons() {
     document.querySelectorAll('.action-button').forEach(button => {
         button.addEventListener('click', async function() {
@@ -240,21 +202,24 @@ function bindActionButtons() {
             const action = this.dataset.action;
 
             try {
-                const formData = new FormData();
-                formData.append('action', action);
-                formData.append('request_id', requestId);
-
-                const res = await fetch('manager_dashboard.php', {
-                    method: 'POST',
-                    body: formData
-                });
+                const res = await fetch(
+                    `http://127.0.0.1:8000/api/manager/leave_requests/${requestId}/${action}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    }
+                );
 
                 const data = await res.json();
-                if (res.ok) {
-                    // Disable buttons immediately for smoother UX
-                    row.querySelectorAll('.action-button').forEach(btn => btn.disabled = true);
-                    showToast(`Request ${action}ed successfully!`);
-                    loadPendingRequests(); // refresh the list
+
+                if (res.ok && data.success) {
+                    showToast(`Request ${action}d successfully!`);
+                    loadPendingRequests(); // Refresh
+                    loadDashboardSummary();
                 } else {
                     showToast(data?.message || `Failed to ${action} request.`, 'error');
                 }
@@ -267,13 +232,70 @@ function bindActionButtons() {
     });
 }
 
-// ✅ Initialize dashboard
+// ================================
+// Initialize dashboard
+// ================================
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('currentDate').textContent =
-        new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        new Date().toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
 
+    // ✅ Load both requests and summary once
     loadPendingRequests();
+    loadDashboardSummary();
 });
+
+// Animate number change in summary cards
+function animateCounter(element, newValue) {
+    const duration = 500; // animation duration in ms
+    const frameRate = 30; // frames per second
+    const totalFrames = Math.round(duration / (1000 / frameRate));
+
+    let startValue = parseInt(element.textContent) || 0;
+    let frame = 0;
+
+    const counter = setInterval(() => {
+        frame++;
+        const progress = frame / totalFrames;
+        const currentValue = Math.round(startValue + (newValue - startValue) * progress);
+        element.textContent = currentValue;
+
+        if (frame === totalFrames) {
+            clearInterval(counter);
+        }
+    }, 1000 / frameRate);
+}
+
+async function loadDashboardSummary() {
+    try {
+        const res = await fetch('http://127.0.0.1:8000/api/manager/dashboard-summary', {
+            headers: {
+                'Authorization': `Bearer ${TOKEN}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || data.success === false) {
+            showToast(data?.message || "Error loading dashboard summary", "error");
+            return;
+        }
+
+        const summary = data; // ✅ Your API already returns plain object
+
+        animateCounter(document.getElementById('totalEmployees'), summary.total_employees);
+        animateCounter(document.getElementById('pendingRequests'), summary.pending_requests);
+        animateCounter(document.getElementById('approvedRequests'), summary.approved_this_month);
+        animateCounter(document.getElementById('rejectedRequests'), summary.rejected_this_month);
+
+    } catch (err) {
+        console.error("Error loading summary:", err);
+        showToast("Network error while loading summary", "error");
+    }
+}
+
 </script>
 </body>
 </html>

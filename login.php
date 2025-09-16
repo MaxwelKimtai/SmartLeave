@@ -1,95 +1,3 @@
-<?php
-session_start();
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-// CSRF token setup
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-$login_error = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // CSRF check
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $login_error = "Invalid request. Please refresh the page and try again.";
-    } else {
-        // DB config
-        $host = 'localhost';
-        $db   = 'smart_leave_db';
-        $user = 'root';
-        $pass = '';
-        $charset = 'utf8mb4';
-
-        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-        $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
-
-        try {
-            $pdo = new PDO($dsn, $user, $pass, $options);
-
-            $email = trim($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
-
-            $stmt = $pdo->prepare("SELECT * FROM employee WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($user && password_verify($password, $user['password'])) {
-                // ✅ Step 1: Call Laravel API login
-                $apiUrl = 'http://127.0.0.1:8000/api/login';
-                $payload = json_encode(['email' => $email, 'password' => $password]);
-
-                $ch = curl_init($apiUrl);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Accept: application/json'
-                ]);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-
-                $apiResponse = curl_exec($ch);
-
-                if (curl_errno($ch)) {
-                    $login_error = "API connection error: " . curl_error($ch);
-                }
-
-                curl_close($ch);
-
-                $apiData = json_decode($apiResponse, true);
-
-                   if (!$apiData || !isset($apiData['token'])) {
-    $login_error = "Login failed: API did not return a token.";
-            } 
-            else {
-    // ✅ Use API response for user info + role
-    $_SESSION['user_id']   = $apiData['user']['id']   ?? $user['id'];
-    $_SESSION['user_name'] = $apiData['user']['name'] ?? $user['name'];
-    $_SESSION['user_role'] = $apiData['user']['role'] ?? $user['role'];
-    $_SESSION['api_token'] = $apiData['token'];
-    $_SESSION['employee_id'] = $apiData['user']['id'] ?? null;
-
-    // ✅ Redirect based on role
-    if ($_SESSION['user_role'] === 'manager') {
-        header("Location: manager_dashboard.php");
-    } else {
-        header("Location: dashboard.php");
-    }
-        exit();
-                }
-            } else {
-                $login_error = "Invalid email or password.";
-            }
-        } catch (PDOException $e) {
-            $login_error = "Database error: " . $e->getMessage();
-        }
-    }
-}
-// Expose $login_error to your form page if needed
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php unset($_SESSION['login_success']); ?>
 <?php endif; ?>
 
-<form action="login.php" method="POST">
+<form id="login-form" method="POST">
     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
 
     <div class="form-group">
@@ -153,17 +61,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
+    <div class="form-options">
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe" name="rememberMe">
+            <label for="rememberMe">Remember me</label>
+        </div>
+        <a href="#" class="forgot-password">Forgot Password?</a>
+    </div>
 
-                        <div class="form-options">
-                            <div class="remember-me">
-                                <input type="checkbox" id="rememberMe" name="rememberMe">
-                                <label for="rememberMe">Remember me</label>
-                            </div>
-                            <a href="#" class="forgot-password">Forgot Password?</a>
-                        </div>
+    <button type="submit" class="login-btn">Login</button>
+</form>
 
-                        <button type="submit" class="login-btn">Login</button>
-                    </form>
 
                     <p class="signup-link">Don't have an account? <a href="register.php">Sign Up</a></p>
                 </div>
@@ -172,3 +80,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("login-form");
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // stop refresh
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      console.log("API response:", data);
+
+      if (!res.ok || !data.token) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // ✅ Save login session in sessionStorage
+      sessionStorage.setItem("user_id", data.user.id);
+      sessionStorage.setItem("user_name", data.user.name);
+      sessionStorage.setItem("user_role", data.user.role);
+      sessionStorage.setItem("api_token", data.token);
+
+      // ✅ Debug check
+      console.log("Stored in sessionStorage:", {
+        id: sessionStorage.getItem("user_id"),
+        name: sessionStorage.getItem("user_name"),
+        role: sessionStorage.getItem("user_role"),
+        token: sessionStorage.getItem("api_token")
+      });
+
+      // ✅ Redirect
+      if (data.user.role === "employee") {
+        window.location.href = "dashboard.php";
+      } else if (data.user.role === "manager") {
+        window.location.href = "manager_dashboard.php";
+      } else {
+        window.location.href = "index.html";
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+});
+</script>
+

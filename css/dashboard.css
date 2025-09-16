@@ -413,20 +413,21 @@ html, body {
 /* --- Bottom Row Grid (Upcoming Leaves, Calendar, Pending, Detailed Balances) --- */
 .bottom-row-grid {
     display: grid;
-    /* Set up for four equal-width columns */
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px; /* Reduced gap from 15px */
-    flex-grow: 1;
+    gap: 10px;
+
+    /* Force all cards in the row to stretch to the tallest */
+    grid-auto-rows: 1fr;  /* <- this ensures all rows get equal height */
 }
 
-/* Ensure cards in this grid take up the available height within their row */
 .bottom-row-grid > .card {
     display: flex;
     flex-direction: column;
-    height: auto; 
-    min-height: 180px; /* Slightly reduced min-height, adjust as needed */
+    height: 280px; /* <-- match the original hardcoded card height */
     box-sizing: border-box;
 }
+
+
 
 
 /* Upcoming Leaves Card */
