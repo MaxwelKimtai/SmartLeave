@@ -112,9 +112,19 @@ if (!TOKEN || USER_ROLE !== 'manager') {
     window.location.href = "login.php";
 }
 
+// ================================
+// Greeting Function
+// ================================
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+}
+
 // ✅ Personalize UI
 document.querySelector('.user-name').textContent = USER_NAME || "Manager";
-document.querySelector('.greeting h1').textContent = `Good Morning, ${USER_NAME || "Manager"}!`;
+document.querySelector('.greeting h1').textContent = `${getGreeting()}, ${USER_NAME || "Manager"}!`;
 
 // ================================
 // Toast function
@@ -236,6 +246,7 @@ function bindActionButtons() {
 // Initialize dashboard
 // ================================
 document.addEventListener('DOMContentLoaded', () => {
+    // ✅ Dynamic current date
     document.getElementById('currentDate').textContent =
         new Date().toLocaleDateString('en-US', {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -246,7 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDashboardSummary();
 });
 
+// ================================
 // Animate number change in summary cards
+// ================================
 function animateCounter(element, newValue) {
     const duration = 500; // animation duration in ms
     const frameRate = 30; // frames per second
@@ -267,6 +280,9 @@ function animateCounter(element, newValue) {
     }, 1000 / frameRate);
 }
 
+// ================================
+// Load Dashboard Summary
+// ================================
 async function loadDashboardSummary() {
     try {
         const res = await fetch('http://127.0.0.1:8000/api/manager/dashboard-summary', {
@@ -295,7 +311,7 @@ async function loadDashboardSummary() {
         showToast("Network error while loading summary", "error");
     }
 }
-
 </script>
+
 </body>
 </html>
